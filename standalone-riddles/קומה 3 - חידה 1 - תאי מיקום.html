@@ -1,0 +1,4880 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17211d">
+  <meta name="description" content="סימולציה לימודית על תאי מיקום, פעילות עצבית ופענוח מיקום." />
+  <title>קומה 3 - חידה 1 - תאי מיקום</title>
+  <style>
+    :root { color-scheme: dark; --ink:#e8eee7; --muted:#a2afa5; --line:rgba(220,232,220,.13); --mint:#c7dda9; }
+    * { box-sizing:border-box; }
+    html,body { min-height:100%; }
+    body { margin:0; padding:clamp(14px,2.5vw,32px); background:radial-gradient(ellipse at 50% -25%,rgba(139,164,120,.2),transparent 58%),#17211d; color:var(--ink); font-family:Arial,"Noto Sans Hebrew",system-ui,sans-serif; }
+    .app { width:min(1180px,100%); margin:0 auto; }
+    .app-header { display:flex; align-items:center; justify-content:space-between; gap:20px; margin:0 2px 14px; }
+    .eyebrow { display:flex; align-items:center; gap:8px; margin-bottom:7px; color:#b6cb9e; font:650 10px/1.1 ui-monospace,monospace; letter-spacing:.09em; }
+    .live-dot { width:7px;height:7px;border-radius:50%;background:#b5d48f;box-shadow:0 0 10px #a5cb7e; }
+    h1 { margin:0; font-size:clamp(22px,3vw,31px); line-height:1.1; font-weight:650; letter-spacing:-.025em; }
+    .subhead { color:var(--muted); font-size:13px; margin-top:7px; }
+    .step-badge { flex:0 0 auto; padding:9px 12px; border:1px solid var(--line); border-radius:10px; color:#d5dfd3; background:rgba(255,255,255,.035); font:600 11px/1 ui-monospace,monospace; }
+    .stepper { display:flex; gap:6px; margin:0 2px 13px; }
+    .stepper span { height:4px; flex:1; border-radius:4px; background:rgba(231,239,226,.13); }
+    .stepper span.done,.stepper span.current { background:#bcd49d; }
+    .scene-shell { overflow:hidden; border:1px solid rgba(216,231,211,.16); border-radius:18px; background:#30372f; box-shadow:0 24px 60px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.2); }
+    #scene { display:block; width:100%; height:auto; aspect-ratio:1120/660; }
+    #scene { touch-action:none; }
+    .scene-title { padding:12px 17px 10px; color:#eef3ea; background:linear-gradient(180deg,#26322b,#222d27); border-bottom:1px solid rgba(0,0,0,.2); font-size:14px; font-weight:700; }
+    .screen-panel { padding:16px; background:linear-gradient(180deg,#202c25,#1b2721); }
+    .story-card,.panel-card { border:1px solid rgba(220,232,220,.12); border-radius:13px; background:rgba(255,255,255,.035); }
+    .story-card { padding:18px 20px; }
+    .story-card p { margin:0 0 10px; max-width:900px; color:#dce5d9; font-size:15px; line-height:1.7; }
+    .story-card p:last-of-type { margin-bottom:16px; }
+    .lesson-grid,.network-layout,.quiz-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:stretch; }
+    .panel-card { padding:14px; }
+    .card-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .card-heading strong { color:#e4ecdf; font-size:13px; }
+    .card-note { color:#98a79a; font-size:10px; line-height:1.45; }
+    .neuron-row { display:flex; align-items:center; gap:13px; min-height:94px; }
+    .neuron-svg { width:80px; height:80px; flex:0 0 80px; }
+    .neuron-name { color:#e3ebdf; font-size:14px; font-weight:700; }
+    .neuron-sub { margin-top:5px; color:#9eae9f; font-size:11px; line-height:1.5; }
+    .rate-pill { display:inline-flex; align-items:center; gap:6px; margin-top:9px; padding:6px 8px; border-radius:8px; color:#cad5c8; background:rgba(255,255,255,.06); font:600 10px/1 ui-monospace,monospace; }
+    .rate-pill.high { color:#d9ecbe; background:rgba(151,190,113,.13); }
+    .rate-dot { width:6px;height:6px;border-radius:50%;background:#809080; }
+    .rate-pill.high .rate-dot { background:#c4df98; box-shadow:0 0 8px rgba(194,222,150,.7); }
+    .trace-canvas { display:block; width:100%; height:132px; border-radius:9px; background:#19251f; }
+    .trace-legend { display:flex; justify-content:space-between; gap:10px; margin-top:5px; color:#78887c; font:500 9px/1.3 ui-monospace,monospace; }
+    .network-neurons { display:grid; direction:ltr; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+    .network-neuron { position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; min-height:89px; padding:8px 4px; border:1px solid rgba(220,232,220,.1); border-radius:10px; background:rgba(0,0,0,.12); text-align:center; transition:.15s ease; }
+    .network-neuron.map-open { z-index:8; }
+    .network-neuron .neuron-svg { width:37px;height:37px;flex-basis:37px; }
+    .network-neuron strong { color:#dfe9dc; font-size:10px; }
+    .network-neuron small { color:#95a495; font-size:9px; }
+    .map-trigger { display:grid; place-items:center; width:min(100%,88px); min-height:36px; padding:4px; border-color:color-mix(in srgb,var(--neuron-color) 70%, transparent); box-shadow:0 0 7px color-mix(in srgb,var(--neuron-color) 30%, transparent); animation:mapPulse 1.7s ease-in-out infinite; }
+    .map-preview { display:grid; direction:ltr; grid-template-columns:repeat(3,12px); grid-template-rows:repeat(2,9px); gap:2px; }
+    .map-preview i { border:1px solid rgba(220,232,220,.32); border-radius:2px; background:rgba(255,255,255,.06); }
+    .map-preview i.selected { border-color:var(--neuron-color); background:var(--neuron-color); box-shadow:0 0 5px var(--neuron-color); }
+    .map-picker { position:absolute; z-index:15; top:calc(100% + 4px); left:50%; width:min(220px,calc(100vw - 48px)); padding:8px; transform:translateX(-50%); border:1px solid rgba(220,232,220,.22); border-radius:9px; background:#19251f; box-shadow:0 12px 24px rgba(0,0,0,.5); }
+    .map-picker[hidden] { display:none; }
+    .map-picker-grid { display:grid; direction:ltr; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; }
+    .map-tile { min-width:0; min-height:33px; padding:4px 2px; border-radius:5px; color:#dce8d6; font:650 10px/1 Arial,"Noto Sans Hebrew",sans-serif; }
+    .map-tile.selected { border-color:var(--neuron-color); color:#17211d; background:var(--neuron-color); }
+    .map-tile:disabled { opacity:.27; cursor:not-allowed; }
+    .map-clear { width:100%; min-height:28px; margin-top:5px; padding:3px 7px; color:#d9c7bc; font-size:10px; }
+    .map-clear[hidden] { display:none; }
+    @keyframes mapPulse { 50% { border-color:var(--neuron-color); box-shadow:0 0 12px color-mix(in srgb,var(--neuron-color) 76%, transparent); } }
+    .task-intro { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
+    .task-intro h3 { margin:0 0 5px; color:#edf2e9; font-size:15px; }
+    .task-intro p { margin:0; color:#e0e9dc; font-size:16px; line-height:1.58; font-weight:600; }
+    .answered-count { flex:0 0 auto; padding:7px 9px; border-radius:8px; color:#cbd7c7; background:rgba(255,255,255,.055); font:600 10px/1 ui-monospace,monospace; }
+    .time-row { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 11px; }
+    button { border:1px solid rgba(227,239,220,.15); border-radius:9px; color:#e7eee4; background:rgba(255,255,255,.055); min-height:35px; padding:0 12px; font:600 12px/1 Arial,"Noto Sans Hebrew",sans-serif; cursor:pointer; transition:background .16s ease,border-color .16s ease,transform .16s ease; }
+    button:hover:not(:disabled) { background:rgba(255,255,255,.11); border-color:rgba(227,239,220,.3); }
+    button:active:not(:disabled) { transform:translateY(1px); }
+    button:focus-visible { outline:2px solid #c6dfa8; outline-offset:2px; }
+    button:disabled { opacity:.42; cursor:not-allowed; }
+    .primary { border-color:#bfd9a1; background:#c7dda9; color:#243326; font-weight:750; }
+    .primary:hover:not(:disabled) { background:#d4e6bc; border-color:#d4e6bc; }
+    .secondary { background:rgba(255,255,255,.035); }
+    .time-button { width:34px; min-height:31px; padding:0; border-radius:8px; color:#aab7ab; font:650 11px/1 ui-monospace,monospace; }
+    .time-button.current { color:#223125; border-color:#c2d7a5; background:#c2d7a5; }
+    .time-button.answered:not(.current) { border-color:rgba(190,219,156,.35); color:#d0dfbc; }
+    .time-button { position:relative; overflow:hidden; }
+    .time-button::before { content:""; position:absolute; inset:0; opacity:.18; background:var(--time-color,#fff); }
+    .time-button.current::before { opacity:.95; }
+    .time-button span { position:relative; z-index:1; }
+    .answer-map { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin:10px 0 12px; }
+    .quiz-hint { color:#bdc9bc; font-size:11px; line-height:1.5; margin:9px 0 0; }
+    .zone-option { display:flex; align-items:center; justify-content:flex-start; gap:8px; min-height:47px; padding:0 10px; border-color:rgba(220,232,220,.12); background:rgba(0,0,0,.13); text-align:right; }
+    .zone-option .zone-number { display:grid; place-items:center; width:23px;height:23px; flex:0 0 23px; border-radius:7px; color:#afbea9; background:rgba(255,255,255,.07); font:700 10px/1 ui-monospace,monospace; }
+    .zone-option.selected { border-color:#b9d493; color:#e6f0d9; background:rgba(151,190,113,.17); }
+    .zone-option.selected .zone-number { color:#253226; background:#c4dca2; }
+    .quiz-controls { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; }
+    .quiz-controls .nav-group { display:flex; gap:7px; }
+    .reveal-card { margin-top:14px; padding:14px; border:1px solid rgba(189,216,154,.27); border-radius:12px; background:rgba(143,177,108,.08); }
+    .reveal-card h3 { margin:0 0 8px; color:#e4efd5; font-size:14px; }
+    .reveal-card p { margin:0 0 10px; color:#c2cec0; font-size:12px; line-height:1.6; }
+    .route-line { color:#d2e2b8; font:650 11px/1.8 ui-monospace,monospace; direction:rtl; }
+    .answer-table-wrap { overflow-x:auto; margin:9px 0 12px; }
+    .answer-table { width:100%; border-collapse:collapse; min-width:520px; font-size:11px; }
+    .answer-table th,.answer-table td { padding:7px 8px; border-bottom:1px solid rgba(220,232,220,.1); text-align:right; vertical-align:top; }
+    .answer-table th { color:#94a494; font-weight:600; }
+    .answer-table td { color:#d5dfd2; }
+    .answer-table code { color:#d7e7bd; font:650 10px/1.4 ui-monospace,monospace; white-space:nowrap; }
+    .reflection { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px; }
+    .reflection label { display:block; color:#dce6d7; font-size:11px; font-weight:650; }
+    .reflection textarea { display:block; width:100%; min-height:72px; resize:vertical; margin-top:6px; padding:9px 10px; border:1px solid rgba(220,232,220,.15); border-radius:9px; background:rgba(0,0,0,.18); color:#eff5eb; font:12px/1.5 Arial,"Noto Sans Hebrew",sans-serif; }
+    .reflection textarea:focus { outline:2px solid rgba(195,221,157,.5); border-color:#b8d396; }
+    .reveal-actions { display:flex; justify-content:flex-start; gap:8px; margin-top:12px; }
+    body.intro-screen { padding-block:clamp(8px,1.4vh,16px); }
+    .intro-screen .app-header { margin-bottom:8px; }
+    .intro-screen .eyebrow,.intro-screen .subhead,.intro-screen .scene-title { display:none; }
+    .intro-screen .stepper { margin-bottom:8px; }
+    .intro-screen .scene-shell { display:flex; flex-direction:column; }
+    .intro-screen .screen-panel { order:0; padding:8px 12px; }
+    .intro-screen #scene { order:1; align-self:center; width:clamp(280px,calc((100vh - 330px) * 1.69697),100%); max-width:100%; }
+    .intro-screen .story-card { padding:11px 15px; }
+    .intro-screen .story-card p { margin-bottom:6px; line-height:1.5; }
+    .intro-screen .story-card p:last-of-type { margin-bottom:9px; }
+    .eyebrow,.subhead { display:none; }
+    #scene { margin-inline:auto; }
+    .quiz-layout { display:block; width:100%; }
+    .quiz-lesson { width:min(100%,940px); max-width:100%; margin:0 auto; }
+    .quiz-lesson .task-intro { align-items:center; margin-bottom:12px; }
+    .quiz-lesson .task-intro h3 { font-size:14px; }
+    .quiz-lesson .task-intro p { max-width:850px; }
+    .quiz-lesson .trace-canvas { height:145px; cursor:pointer; }
+    .quiz-lesson.revealed-lesson .trace-canvas { height:100px; cursor:default; }
+    .quiz-lesson .trace-legend { display:flex; }
+    .reveal-caption { margin:0 0 12px; color:#e3edd9; font-size:clamp(16px,2vw,20px); line-height:1.5; font-weight:700; text-align:center; }
+    .prediction-check { margin:-5px 0 12px; color:#f0f5ec; font-size:clamp(17px,2.1vw,21px); line-height:1.4; font-weight:750; text-align:center; }
+    .screen-revealed .reflection label { font-size:16px; line-height:1.5; }
+    .screen-revealed .reflection textarea { font-size:14px; line-height:1.55; }
+    .quiz-followup { display:none; }
+    .mapping-title { margin:9px 0 6px; color:#cfdbcd; font-size:11px; }
+    .network-map-legend { display:grid; direction:ltr; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin-top:9px; }
+    .map-legend-tile { display:flex; align-items:center; justify-content:center; gap:6px; min-height:32px; border:1px solid rgba(220,232,220,.13); border-radius:6px; background:rgba(0,0,0,.12); color:#e4ecdf; font:650 10px/1 Arial,"Noto Sans Hebrew",sans-serif; }
+    .map-legend-tile i { width:8px; height:8px; border-radius:50%; background:var(--neuron-color); box-shadow:0 0 6px var(--neuron-color); }
+    .mapping-status { margin-top:6px; color:#aab9a8; font-size:10px; }
+    .mapping-status.complete { color:#d5e8bd; }
+    .reveal-card.compact { margin-top:9px; padding:10px 12px; }
+    .reveal-card.compact p { margin-bottom:6px; }
+    .screen-revealed .screen-panel { padding:9px 13px; }
+    .screen-revealed .reflection { margin-top:8px; }
+    .screen-revealed .reflection textarea { min-height:58px; }
+    footer { display:flex; justify-content:space-between; gap:10px; margin:12px 3px 0; color:#829186; font:500 10px/1.3 ui-monospace,monospace; letter-spacing:.04em; }
+    @media (max-width:760px) {
+      body { padding:14px 10px; }
+      .app-header { align-items:flex-start; }
+      .subhead { font-size:12px; line-height:1.45; }
+      .step-badge { padding:8px; font-size:9px; }
+      .scene-shell { border-radius:13px; }
+      .screen-panel { padding:11px; }
+      .scene-title { padding:10px 12px; font-size:13px; }
+      .lesson-grid,.network-layout,.quiz-layout { grid-template-columns:1fr; }
+      .lesson-grid > :first-child { order:2; }
+      .lesson-grid > :last-child { order:1; }
+      .network-neurons { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .task-intro { flex-direction:column; gap:8px; }
+      .quiz-lesson .task-intro p { font-size:14px; }
+      .reflection { grid-template-columns:1fr; }
+      .story-card { padding:14px; }
+      .story-card p { font-size:14px; }
+      .trace-canvas { height:112px; }
+      .quiz-lesson .trace-canvas { height:118px; }
+      .network-neuron { min-height:78px; }
+      footer { font-size:8px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+    @media (max-height:920px) and (min-width:760px){body{zoom:.88}}
+    @media (max-height:780px) and (min-width:760px){body{zoom:.74}}
+    @media (max-height:650px) and (min-width:760px){body{zoom:.65}}
+  </style>
+<style data-standalone-responsive>
+/* Shared responsive layer for every embedded riddle. Loaded after each riddle's
+   original styles so the activities keep their visual identity without being
+   scaled down to fit a short iframe. */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+body {
+  zoom: 1 !important;
+}
+
+body[data-riddle] {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  zoom: 1 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body[data-riddle] img,
+body[data-riddle] svg,
+body[data-riddle] canvas {
+  max-width: 100%;
+}
+
+body[data-riddle] button,
+body[data-riddle] input,
+body[data-riddle] textarea,
+body[data-riddle] select {
+  max-width: 100%;
+}
+
+/* Screen changes move focus to the new heading for assistive technology.
+   Browsers otherwise draw a heavy rectangular ring around these non-control
+   headings, which reads as an accidental overlap in the activity artwork. */
+body[data-riddle] :is(h1, h2, h3)[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Floor 1 — dendritic workflow */
+body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+  height: 100dvh;
+  padding: 14px;
+  align-items: stretch;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+  width: min(1540px, 100%);
+  height: calc(100dvh - 28px);
+  max-height: none;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 78px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) > .step-actions {
+  position: sticky !important;
+  z-index: 14;
+  bottom: 0 !important;
+  padding: 10px 8px 6px;
+  border-top: 1px solid rgba(203, 213, 225, .72);
+  background: linear-gradient(180deg, rgba(248, 251, 255, .12), #f8fbff 28%);
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node {
+  min-height: 42px;
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .box-title,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .main {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .sub,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .prepared-hint,
+body[data-riddle^="dendritic-riddle"] .placed-row,
+body[data-riddle^="dendritic-riddle"] .placed-details summary,
+body[data-riddle^="dendritic-riddle"] .placed-list > b {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle^="dendritic-riddle"] .board-wrap {
+  height: clamp(330px, 48dvh, 540px) !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 900px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+    padding: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1 .builder,
+  body[data-riddle^="dendritic-riddle"] #flowStep2 .builder {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+    padding-inline: 13px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-node {
+    padding-inline: 4px !important;
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: clamp(310px, 58dvh, 440px) !important;
+  }
+}
+
+/* Floor 2 — temperature */
+/* Floor 1 viewport-fit overrides: fill the iframe first and keep a single
+   scroll surface only when the content truly cannot fit. */
+body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+  padding: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+  width: min(1600px, 100%);
+  height: 100dvh;
+  border-radius: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar {
+  padding: 8px clamp(14px, 2vw, 30px) 7px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar > div {
+  margin-bottom: 6px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar strong {
+  font-size: 18px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar #flowPuzzleTitle {
+  font-size: 14px;
+}
+
+body[data-riddle^="dendritic-riddle"] .stepper {
+  gap: 6px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node {
+  min-height: 34px;
+  padding: 4px 8px;
+  font-size: 12px !important;
+  line-height: 1.2;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node b {
+  flex-basis: 23px;
+  height: 23px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+  padding: 8px clamp(12px, 2vw, 28px) 10px;
+  gap: 7px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scroll-padding-bottom: 12px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) > .step-actions {
+  position: static !important;
+  z-index: auto;
+  bottom: auto !important;
+  min-height: 38px;
+  padding: 0;
+  border-top: 0;
+  background: none;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-actions .finish-btn,
+body[data-riddle^="dendritic-riddle"] .step-actions .secondary-btn {
+  min-width: 170px;
+  padding: 9px 14px;
+  font-size: 14px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 1px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-kicker {
+  grid-row: 1 / 3;
+  margin: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro h2 {
+  margin: 0;
+  font-size: clamp(21px, 3vh, 28px);
+  line-height: 1.12;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro p {
+  max-width: none;
+  font-size: clamp(13px, 1.7vh, 15px);
+  line-height: 1.3;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .box-title,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .main {
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .sub,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .prepared-hint,
+body[data-riddle^="dendritic-riddle"] .placed-row,
+body[data-riddle^="dendritic-riddle"] .placed-details summary,
+body[data-riddle^="dendritic-riddle"] .placed-list > b {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-riddle^="dendritic-riddle"] #buildPuzzleReminder p,
+body[data-riddle^="dendritic-riddle"] #casePuzzleReminder p {
+  white-space: normal;
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0:not([hidden]) {
+  display: grid;
+  grid-template-rows: auto minmax(min-content, 1fr);
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-main,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .story-visual,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .visual-frame {
+  min-height: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+  height: 100%;
+}
+
+@media (min-width: 701px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    grid-template-rows: auto minmax(min-content, 1fr) auto !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildControls,
+  body[data-riddle^="dendritic-riddle"] #caseControls {
+    min-height: min-content !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost {
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleVisualHost,
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual {
+    height: 100%;
+    min-height: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 540px;
+  }
+}
+
+@media (min-width: 1200px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1 #inputMenu .option-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the two-column composition through small landscape/tablet widths. The
+   source stylesheet otherwise creates an implicit second column and squeezes
+   the controls to roughly 70px between 701px and 850px. */
+@media (min-width: 701px) and (max-width: 900px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(270px, .9fr) minmax(330px, 1.1fr) !important;
+    grid-template-rows: auto minmax(min-content, 1fr) auto !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-topbar {
+    padding: 8px 10px 7px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-topbar > div {
+    margin-bottom: 6px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .stepper {
+    gap: 3px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-node {
+    min-height: 43px;
+    padding: 3px 2px !important;
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+    padding: 10px 12px 14px !important;
+    gap: 10px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro {
+    display: block;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-kicker {
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro h2 {
+    font-size: 22px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro p {
+    font-size: 14px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildControls,
+  body[data-riddle^="dendritic-riddle"] #caseControls,
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleLeft,
+  body[data-riddle^="dendritic-riddle"] .rationale-card {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep1 .builder {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual {
+    height: auto;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: clamp(260px, 42dvh, 360px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 300px;
+  }
+}
+
+/* Requested layout corrections — preserve the compact shell while restoring
+   the scientific diagrams to their meaningful spatial arrangement. */
+body[data-riddle^="dendritic-riddle"] #flowStep1 #inputMenu .option-list {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+@media (min-width: 651px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: clamp(350px, 46dvh, 485px) !important;
+    min-height: 350px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    position: absolute !important;
+    inset: auto auto -4px 50% !important;
+    width: min(62%, 620px) !important;
+    height: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .condition {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(84px, 16%, 116px) !important;
+    height: 49px !important;
+    min-height: 0 !important;
+    padding: 4px 5px !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-0 { left: 0 !important; top: 68% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-1 { left: 14% !important; top: 39% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-2 { left: 31% !important; top: 2% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-3 { left: 53% !important; top: 2% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-4 { left: 70% !important; top: 39% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-5 { left: auto !important; right: 0 !important; top: 68% !important; }
+
+  body[data-riddle="movement-direction"] #record .board-stage.responsive-direction-stage {
+    position: relative !important;
+    display: block !important;
+    width: min(100%, 620px) !important;
+    max-width: 620px !important;
+    aspect-ratio: 1 !important;
+    margin: 4px auto 14px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-stage > .plot-ring {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-stage .mini-raster {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(82px, 17%, 108px) !important;
+    height: 58px !important;
+    min-height: 0 !important;
+    padding: 5px 7px !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .plot-0 { left: 50% !important; top: 5% !important; }
+  body[data-riddle="movement-direction"] #record .plot-1 { left: 82% !important; top: 18% !important; }
+  body[data-riddle="movement-direction"] #record .plot-2 { left: 91% !important; top: 50% !important; }
+  body[data-riddle="movement-direction"] #record .plot-3 { left: 82% !important; top: 82% !important; }
+  body[data-riddle="movement-direction"] #record .plot-4 { left: 50% !important; top: 95% !important; }
+  body[data-riddle="movement-direction"] #record .plot-5 { left: 18% !important; top: 82% !important; }
+  body[data-riddle="movement-direction"] #record .plot-6 { left: 9% !important; top: 50% !important; }
+  body[data-riddle="movement-direction"] #record .plot-7 { left: 18% !important; top: 18% !important; }
+}
+
+@media (min-width: 821px) {
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    display: block !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control,
+  body[data-riddle="skin-temperature"] #record .live-card,
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    grid-area: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    width: 100% !important;
+    height: clamp(145px, 20dvh, 185px) !important;
+    min-height: 145px !important;
+    aspect-ratio: auto !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "head"
+      "instructions"
+      "scene"
+      "gallery-head"
+      "gallery"
+      "gallery-hint"
+      "analysis" !important;
+    align-items: start !important;
+    gap: 8px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head { grid-area: head !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions { grid-area: instructions !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    grid-area: scene !important;
+    width: 100% !important;
+    height: clamp(260px, 42dvh, 420px) !important;
+    min-height: 260px !important;
+    margin: 0 !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head {
+    grid-area: gallery-head !important;
+    margin: 4px 2px 0 !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head .subtle { display: inline !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    grid-area: gallery !important;
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 11px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint { grid-area: gallery-hint !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #experimentAnalysis { grid-area: analysis !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-window {
+    padding: 5px 4px 14px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex: 0 0 150px !important;
+    padding: 7px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img { height: 92px !important; }
+}
+
+body[data-riddle="skin-temperature"] .shell {
+  max-width: 1700px;
+}
+
+body[data-riddle="skin-temperature"] .gauge-stage {
+  min-height: 420px;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .fan-tool span,
+body[data-riddle="skin-temperature"] .footer-note,
+body[data-riddle="skin-temperature"] .reset-note {
+  font-size: 12px !important;
+}
+
+@media (max-width: 1180px) {
+  body[data-riddle="skin-temperature"] .lab-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-side {
+    order: -1;
+  }
+}
+
+@media (max-width: 1050px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr);
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 18px;
+    overflow: visible;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 700 / 390;
+    min-width: 0;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > .temperature-gauge,
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > #resultTemperatureGauge {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2;
+    grid-row: 1;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit .condition,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 12px;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual,
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-column: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-row: 2;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control .cool-note {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}
+
+/* On landscape/tablet screens, use the available width before adding height. */
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] .shell {
+    padding-block: 12px 18px;
+  }
+
+  body[data-riddle="skin-temperature"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(260px, .45fr) !important;
+    align-items: start;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-side {
+    order: initial;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.42fr) minmax(250px, .58fr);
+    grid-template-areas:
+      "gauge cooling"
+      "gauge live"
+      "gauge skin";
+    grid-template-rows: auto auto 1fr;
+    align-items: stretch;
+    gap: 7px 12px;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-area: gauge;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(210px, .75fr);
+    align-items: center;
+    gap: 10px;
+    height: min(54dvh, 420px) !important;
+    min-height: 330px !important;
+    padding: 8px;
+    overflow: visible;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 700 / 390;
+    min-width: 0;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > .temperature-gauge {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2;
+    grid-row: 1;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 7px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 62px;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control {
+    grid-area: cooling;
+  }
+
+  body[data-riddle="skin-temperature"] #record .live-card {
+    grid-area: live;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    grid-area: skin;
+    min-height: 118px;
+    height: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 8px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode.screen.active {
+    display: grid !important;
+    grid-template-columns: minmax(300px, .7fr) minmax(0, 1.3fr);
+    grid-template-areas:
+      "title title"
+      "lead lead"
+      "challenge result"
+      "answer result";
+    align-items: start;
+    gap: 9px 15px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .screen-intro {
+    grid-area: title;
+    margin: 0;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .lede {
+    grid-area: lead;
+    margin: 0 0 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .decode-grid {
+    display: contents;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .challenge {
+    grid-area: challenge;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-orbit-card {
+    grid-area: result;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .answer-card {
+    grid-area: answer;
+    margin: 0;
+  }
+}
+
+@media (min-width: 821px) and (max-width: 1180px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual,
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-column: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-row: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Floor 2 — movement direction */
+body[data-riddle="movement-direction"] .shell {
+  max-width: 1700px;
+}
+
+body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+  align-items: center;
+  gap: 22px;
+  width: 100% !important;
+  max-width: none !important;
+  aspect-ratio: auto !important;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-visual {
+  position: relative;
+  width: min(100%, 700px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+  position: static !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 10px;
+  width: 100%;
+  pointer-events: auto !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-raster {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 72px;
+  padding: 9px 10px;
+  transform: none !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title small,
+body[data-riddle="movement-direction"] .board-label,
+body[data-riddle="movement-direction"] .source,
+body[data-riddle="movement-direction"] .subtle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row {
+  height: 13px;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row i {
+  height: 10px;
+}
+
+body[data-riddle="movement-direction"] .target-index {
+  font-size: 11px !important;
+}
+
+body[data-riddle="movement-direction"] .target-angle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+  width: 100%;
+  max-width: none !important;
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .experiment-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .experiment-instructions {
+    order: -1;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .decode-layout,
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-areas: "evidence" "answer" !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+    width: 100%;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+  body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-visual {
+    width: 100%;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="movement-direction"] .shell {
+    padding-block: 12px 18px;
+  }
+
+  body[data-riddle="movement-direction"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 315px), 500px);
+    min-width: 340px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-layout {
+    grid-template-columns: minmax(0, 1.42fr) minmax(260px, .58fr);
+    gap: 16px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions {
+    padding: 14px 16px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-top {
+    grid-template-columns: minmax(290px, .66fr) minmax(0, 1.34fr) !important;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "challenge results"
+      "answer results" !important;
+    gap: 10px 16px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-evidence {
+    display: contents;
+  }
+
+  body[data-riddle="movement-direction"] #decode .challenge-card {
+    grid-area: challenge;
+  }
+
+  body[data-riddle="movement-direction"] #decode .results-card {
+    grid-area: results;
+  }
+
+  body[data-riddle="movement-direction"] #decode .answer-card {
+    grid-area: answer;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 350px), 440px);
+    min-width: 320px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .results-card,
+  body[data-riddle="movement-direction"] #decode .answer-card,
+  body[data-riddle="movement-direction"] #decode .challenge-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-top {
+    margin-block: 10px 6px;
+  }
+}
+
+/* Floor 2 — hippocampal object neuron */
+body[data-riddle="hippocampal-object-neuron"] .shell {
+  max-width: 1680px;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .intro-grid {
+  min-height: 0 !important;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .photo-card img {
+  height: clamp(300px, 45dvh, 520px) !important;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="hippocampal-object-neuron"] .intro-grid,
+  body[data-riddle="hippocampal-object-neuron"] .lab-scene,
+  body[data-riddle="hippocampal-object-neuron"] .decode-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-block: 10px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-grid {
+    min-height: calc(100dvh - 120px) !important;
+    gap: clamp(28px, 4vw, 64px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro h1 {
+    font-size: clamp(40px, 3.7vw, 54px);
+    margin-bottom: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .lede {
+    line-height: 1.55;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .photo-card img {
+    height: min(64dvh, 520px) !important;
+    object-fit: cover;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(350px, .55fr) minmax(0, 1.45fr);
+    grid-template-areas:
+      "head head"
+      "instructions scene"
+      "gallery-head scene"
+      "gallery scene"
+      "gallery-hint scene"
+      "analysis analysis";
+    align-items: start;
+    gap: 8px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #backBrain {
+    position: absolute;
+    z-index: 4;
+    inset: 0 0 auto auto;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    grid-area: head;
+    margin: 0;
+    padding-inline-end: 106px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions {
+    grid-area: instructions;
+    align-self: stretch;
+    margin: 0;
+    padding: 14px 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    grid-area: scene;
+    grid-template-columns: minmax(0, 1.3fr) minmax(250px, .7fr) !important;
+    align-self: stretch;
+    gap: 12px;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene {
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto !important;
+    align-self: stretch;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    min-height: 0 !important;
+    padding: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head {
+    grid-area: gallery-head;
+    display: flex;
+    margin: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head .subtle {
+    display: none;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    grid-area: gallery;
+    align-self: stretch;
+    margin: 0;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex-basis: 104px;
+    padding: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img {
+    height: 60px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    grid-area: gallery-hint;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #experimentAnalysis {
+    grid-area: analysis;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul,
+  body[data-riddle="hippocampal-object-neuron"] .category-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Floor 2 — language neuron */
+body[data-riddle="language-neuron"] .app-shell {
+  max-width: 1480px;
+}
+
+body[data-riddle="language-neuron"] .hero-grid,
+body[data-riddle="language-neuron"] #screen-intro .hero-grid {
+  min-height: 0 !important;
+  transform: none !important;
+}
+
+body[data-riddle="language-neuron"] .illustration-tag,
+body[data-riddle="language-neuron"] .truth-chip,
+body[data-riddle="language-neuron"] .review-status,
+body[data-riddle="language-neuron"] .choice-button small,
+body[data-riddle="language-neuron"] .keyboard-hint,
+body[data-riddle="language-neuron"] .dataset-kicker,
+body[data-riddle="language-neuron"] .dataset-breakdown span,
+body[data-riddle="language-neuron"] .pipeline-label,
+body[data-riddle="language-neuron"] .pipeline-set > span:last-child,
+body[data-riddle="language-neuron"] .individual-test-card span,
+body[data-riddle="language-neuron"] .individual-test-card strong {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-riddle="language-neuron"] .sort-bin,
+body[data-riddle="language-neuron"] .current-trial {
+  min-height: clamp(250px, 38dvh, 390px) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordions {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordion[open] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-areas:
+      "current current"
+      "nonword word" !important;
+  }
+
+  body[data-riddle="language-neuron"] .training-stage,
+  body[data-riddle="language-neuron"] .fake-test-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="language-neuron"] .learning-accordions,
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-areas: "current" "word" "nonword" !important;
+  }
+}
+
+/* Floor 3 — place cells */
+body[data-riddle="mouse-place-cells"] .app {
+  width: min(1600px, 100%);
+}
+
+body[data-riddle="mouse-place-cells"] button {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+body[data-riddle="mouse-place-cells"] .card-note,
+body[data-riddle="mouse-place-cells"] .neuron-sub,
+body[data-riddle="mouse-place-cells"] .rate-pill,
+body[data-riddle="mouse-place-cells"] .trace-legend,
+body[data-riddle="mouse-place-cells"] .network-neuron strong,
+body[data-riddle="mouse-place-cells"] .network-neuron small,
+body[data-riddle="mouse-place-cells"] .map-tile,
+body[data-riddle="mouse-place-cells"] .map-clear,
+body[data-riddle="mouse-place-cells"] .answered-count,
+body[data-riddle="mouse-place-cells"] .quiz-hint,
+body[data-riddle="mouse-place-cells"] .route-line,
+body[data-riddle="mouse-place-cells"] .answer-table,
+body[data-riddle="mouse-place-cells"] .answer-table code {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle="mouse-place-cells"] .network-neuron {
+  min-height: 108px;
+}
+
+body[data-riddle="mouse-place-cells"] .map-trigger {
+  min-height: 42px;
+}
+
+body[data-riddle="mouse-place-cells"] #stepBadge {
+  font-size: 12px !important;
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="mouse-place-cells"] .lesson-grid,
+  body[data-riddle="mouse-place-cells"] .network-layout,
+  body[data-riddle="mouse-place-cells"] .quiz-layout,
+  body[data-riddle="mouse-place-cells"] .reflection {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card {
+    padding: 18px;
+  }
+
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card button {
+    min-height: 48px;
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neurons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open {
+    grid-column: 1 / -1;
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open .map-picker {
+    position: static;
+    width: 100%;
+    margin-top: 5px;
+    transform: none;
+  }
+}
+
+/* Floor 3 — WormMind */
+body[data-riddle="wormmind"] main {
+  width: min(1680px, 100%);
+}
+
+body[data-riddle="wormmind"] .lesson-screen {
+  padding-block: clamp(22px, 3vw, 38px) clamp(32px, 4vw, 52px) !important;
+}
+
+body[data-riddle="wormmind"] .back-action {
+  margin-bottom: 12px;
+}
+
+body[data-riddle="wormmind"] .screen-heading {
+  margin-bottom: 16px;
+}
+
+body[data-riddle="wormmind"] .network-legend {
+  margin-bottom: 8px;
+}
+
+body[data-riddle="wormmind"] .reflection-panel,
+body[data-riddle="wormmind"] .final-questions {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+body[data-riddle="wormmind"] .screen-footer {
+  margin-top: 20px;
+}
+
+body[data-riddle="wormmind"] .brand small,
+body[data-riddle="wormmind"] .step-chip,
+body[data-riddle="wormmind"] .step-chip b,
+body[data-riddle="wormmind"] .paper-link,
+body[data-riddle="wormmind"] .eyebrow,
+body[data-riddle="wormmind"] .arena-header small,
+body[data-riddle="wormmind"] .arena-header > p span,
+body[data-riddle="wormmind"] .circuit-card header small,
+body[data-riddle="wormmind"] .observation-log span,
+body[data-riddle="wormmind"] .instruction-card b,
+body[data-riddle="wormmind"] .network-legend span,
+body[data-riddle="wormmind"] .rewire-counter span,
+body[data-riddle="wormmind"] #editState,
+body[data-riddle="wormmind"] .simulation-badge,
+body[data-riddle="wormmind"] .artificial-key,
+body[data-riddle="wormmind"] .circuit-node small {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="wormmind"] .hero-grid,
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="wormmind"] .topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 921px) {
+  body[data-riddle="wormmind"] .hero-grid,
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 980px) {
+  body[data-riddle="wormmind"] .retest-layout {
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+  }
+
+  body[data-riddle="wormmind"] .result-network-card,
+  body[data-riddle="wormmind"] .single-arena {
+    width: 100%;
+  }
+}
+
+/* WormMind viewport-fit layout. On short laptop/desktop viewports, use the
+   available width for the explanation and activity instead of shrinking the
+   whole page or forcing every section into a long vertical stack. */
+@media (min-width: 921px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .app-shell {
+    min-height: 100dvh;
+  }
+
+  body[data-riddle="wormmind"] .topbar {
+    min-height: 58px;
+    padding: 5px clamp(14px, 2vw, 30px);
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .brand {
+    min-width: 146px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  body[data-riddle="wormmind"] .brand-mark svg {
+    width: 27px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-progress {
+    gap: 4px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-progress > i {
+    width: clamp(5px, 1vw, 14px);
+  }
+
+  body[data-riddle="wormmind"] .step-chip {
+    min-height: 38px;
+    padding-inline: 7px;
+  }
+
+  body[data-riddle="wormmind"] .paper-link {
+    min-width: 68px;
+    height: 36px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen {
+    min-height: calc(100dvh - 58px);
+    padding: 8px clamp(16px, 2.2vw, 34px) 10px !important;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) {
+    display: grid;
+    grid-template-columns: minmax(270px, .56fr) minmax(0, 1.44fr);
+    grid-template-rows: auto minmax(340px, auto) auto;
+    align-items: start;
+    gap: 7px 18px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .back-action {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .screen-heading {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .screen-footer {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .back-action {
+    min-height: 34px;
+    margin: 0;
+    padding-inline: 13px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading {
+    margin: 0;
+    display: grid;
+    align-content: start;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading h2 {
+    margin: 0;
+    font-size: clamp(27px, 2.35vw, 38px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading > div > p:not(.eyebrow) {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+
+  body[data-riddle="wormmind"] .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card {
+    width: 100%;
+    padding: 9px 11px;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card p {
+    margin: 4px 0 2px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card small {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .rewire-counter {
+    min-width: 0;
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="wormmind"] .rewire-counter strong {
+    margin-top: 2px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="wormmind"] .simulation-badge {
+    justify-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen > .arena-grid,
+  body[data-riddle="wormmind"] .rewire-screen > .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-screen > .retest-layout {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen > .reflection-panel,
+  body[data-riddle="wormmind"] .rewire-screen > .reflection-panel {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend {
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    align-self: start;
+    margin-top: 34px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-question {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .retest-screen > .final-questions {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .retest-screen:has(.final-questions:not([hidden])) > .screen-footer {
+    grid-row: 4;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])),
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .arena-grid,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .circuit-comparison {
+    grid-row: 2 / span 2;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .reflection-panel,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .reflection-panel {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .screen-footer,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .screen-footer {
+    grid-row: 4;
+  }
+
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-layout {
+    gap: 10px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header,
+  body[data-riddle="wormmind"] .circuit-card > header {
+    min-height: 48px;
+    padding: 6px 10px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header .sex-icon,
+  body[data-riddle="wormmind"] .circuit-card .sex-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header h3,
+  body[data-riddle="wormmind"] .circuit-card h3 {
+    margin-top: 1px;
+    font-size: 17px;
+    line-height: 1.18;
+  }
+
+  body[data-riddle="wormmind"] .arena-header > p strong {
+    font-size: 20px;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage {
+    height: clamp(240px, calc(100dvh - 310px), 330px);
+  }
+
+  body[data-riddle="wormmind"] .arena-footer {
+    min-height: 42px;
+    padding: 5px 9px;
+  }
+
+  body[data-riddle="wormmind"] .observation-log span {
+    min-height: 30px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-board,
+  body[data-riddle="wormmind"] .result-network-card .circuit-board {
+    height: clamp(330px, calc(100dvh - 285px), 430px);
+  }
+
+  body[data-riddle="wormmind"] .rewire-feedback {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .network-legend {
+    min-height: 30px;
+    margin: 0;
+    padding: 5px 10px;
+    gap: 14px;
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel,
+  body[data-riddle="wormmind"] .final-questions {
+    margin: 0;
+    padding: 11px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  body[data-riddle="wormmind"] .question-index {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel h3,
+  body[data-riddle="wormmind"] .final-questions h3,
+  body[data-riddle="wormmind"] .network-question h3 {
+    margin-bottom: 7px;
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel label,
+  body[data-riddle="wormmind"] .final-fields label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel textarea {
+    height: 58px;
+    min-height: 58px;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .reflection-footer {
+    min-height: 42px;
+    margin-top: 7px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .screen-footer {
+    margin: 0;
+    padding-top: 6px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .screen-reference {
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .hero-grid {
+    grid-template-columns: minmax(0, 1.18fr) minmax(340px, .82fr) !important;
+    align-items: start;
+    gap: 18px;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(145px, 26%);
+    align-items: start;
+    gap: 0 14px;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy > .eyebrow,
+  body[data-riddle="wormmind"] .hero-copy > h1,
+  body[data-riddle="wormmind"] .hero-copy > h2 {
+    grid-column: 1 / -1;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy h1 {
+    font-size: clamp(34px, 3vw, 46px);
+    line-height: 1.02;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy h2 {
+    margin: 8px 0 10px;
+    font-size: clamp(21px, 1.75vw, 26px);
+    line-height: 1.2;
+  }
+
+  body[data-riddle="wormmind"] .hero-lead {
+    grid-column: 1;
+    grid-row: 4;
+    font-size: 14px;
+    line-height: 1.48;
+  }
+
+  body[data-riddle="wormmind"] .lead-break {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="wormmind"] .intro-motion {
+    grid-column: 2;
+    grid-row: 4;
+    width: 100%;
+    margin: 0;
+  }
+
+  body[data-riddle="wormmind"] .specimen-board {
+    padding: 9px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro {
+    padding: 1px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro > h3 {
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="wormmind"] .reproduction-note {
+    padding: 7px 9px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .reproduction-note p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card header {
+    min-height: 46px;
+    padding: 6px 9px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card .sex-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card h3 {
+    font-size: 16px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card figure {
+    height: clamp(74px, 13dvh, 116px);
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="wormmind"] .intro-wide-cta {
+    min-height: 40px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1200px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .specimen-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1199px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .circuit-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(275px, .45fr);
+    grid-template-rows: auto auto minmax(330px, auto) auto;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .screen-heading {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-question {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .screen-footer {
+    grid-row: 4;
+  }
+}
+
+@media (min-width: 921px) and (max-height: 600px) {
+  body[data-riddle="wormmind"] .arena-stage {
+    height: clamp(205px, calc(100dvh - 310px), 245px);
+  }
+
+  body[data-riddle="wormmind"] .circuit-board,
+  body[data-riddle="wormmind"] .result-network-card .circuit-board {
+    height: clamp(250px, calc(100dvh - 285px), 315px);
+  }
+
+  body[data-riddle="wormmind"] .circuit-node {
+    width: 118px;
+    min-height: 54px;
+    padding: 5px 7px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node.sensory {
+    width: 126px;
+    padding: 15px 9px 5px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node.motor {
+    width: 116px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node small {
+    margin-bottom: 2px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node strong {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="wormmind"] .network-legend {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    overflow-x: visible;
+  }
+
+  body[data-riddle="wormmind"] .network-legend span {
+    min-width: 0;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage {
+    display: grid;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage canvas {
+    width: 100%;
+    height: 300px;
+  }
+
+  body[data-riddle="wormmind"] .classification-panel {
+    position: static;
+    min-height: 0;
+    margin: 10px;
+  }
+}
+
+/* Final viewport-fit refinements. Keep the type at its natural size and use
+   the available width/height before introducing a scroll surface. */
+body[data-riddle="skin-temperature"] .gauge-stage,
+body[data-riddle="skin-temperature"] .result-gauge-stage {
+  min-height: 0 !important;
+}
+
+@media (min-width: 701px) and (max-height: 700px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    row-gap: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleVisualHost,
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual,
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    min-height: 0 !important;
+    max-height: 100%;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] .shell,
+  body[data-riddle="movement-direction"] .shell,
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-block: 8px 10px;
+  }
+
+  body[data-riddle="skin-temperature"] .top,
+  body[data-riddle="movement-direction"] .top,
+  body[data-riddle="hippocampal-object-neuron"] .top {
+    min-height: 38px;
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="skin-temperature"] .steps,
+  body[data-riddle="movement-direction"] .steps,
+  body[data-riddle="hippocampal-object-neuron"] .steps {
+    margin-bottom: 10px;
+  }
+
+  body[data-riddle="skin-temperature"] .has-back,
+  body[data-riddle="movement-direction"] .has-back {
+    padding-top: 38px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    height: clamp(250px, 45dvh, 390px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-grid {
+    min-height: calc(100dvh - 145px) !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro h1 {
+    margin-bottom: 10px;
+    font-size: clamp(38px, 3.35vw, 46px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .lede {
+    font-size: 17px;
+    line-height: 1.48;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-copy .actions {
+    margin-top: 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .citation {
+    margin-top: 12px;
+    padding-top: 10px;
+    line-height: 1.45;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .back-nav,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .back-nav {
+    min-height: 34px;
+    margin-bottom: 8px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    align-items: center;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head .eyebrow,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .eyebrow {
+    margin-bottom: 6px;
+    padding-block: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head h2,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head h2 {
+    margin-bottom: 5px;
+    font-size: clamp(30px, 2.8vw, 38px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li {
+    min-height: 0;
+    padding: 7px 39px 7px 8px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li::before {
+    top: 7px;
+    right: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: min(58dvh, 380px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    height: 100%;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    align-items: center;
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .explain {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 340px) !important;
+    gap: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode.active {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "head back"
+      "decode decode"
+      "final final"
+      "source source";
+    align-items: start;
+    gap: 8px 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .back-nav {
+    grid-area: back;
+    margin: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .decode-head {
+    grid-area: head;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .decode-section {
+    grid-area: decode;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .final-question {
+    grid-area: final;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .source {
+    grid-area: source;
+    margin-top: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 11px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main {
+    display: grid;
+    grid-template-columns: minmax(210px, .62fr) minmax(0, 1.38fr);
+    grid-template-areas:
+      "neuron raster"
+      "title summary"
+      "categories categories";
+    align-items: center;
+    gap: 5px 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-neuron {
+    grid-area: neuron;
+    gap: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .neuron-badge {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    grid-area: raster;
+    margin: 8px 0 9px;
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-head {
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-svg {
+    height: 54px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > h3 {
+    grid-area: title;
+    margin-bottom: 3px;
+    font-size: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .small {
+    grid-area: summary;
+    margin-bottom: 7px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-grid {
+    grid-area: categories;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel {
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 {
+    min-height: 28px;
+    margin-bottom: 4px;
+    font-size: 11.5px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 span:last-child {
+    padding: 1px 4px;
+    font-size: 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .stimuli-grid {
+    gap: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus {
+    padding: 3px;
+    border-radius: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: clamp(42px, 7dvh, 56px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 18px;
+    margin-top: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    top: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .question {
+    font-size: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    margin: 8px 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .option {
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box {
+    margin-top: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box label {
+    margin-bottom: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box textarea {
+    min-height: 60px;
+    height: 60px;
+    padding: 8px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .actions {
+    margin-top: 8px;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 700px) {
+  body[data-riddle="movement-direction"] .shell {
+    padding-bottom: 0;
+  }
+
+  body[data-riddle="movement-direction"] #decode .source {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 330px), 460px);
+    min-width: 300px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 280px);
+    min-width: 260px;
+  }
+}
+
+/* A short but wide laptop still has enough horizontal room for a comfortably
+   sized direction board. Use that room instead of leaving the lower half of
+   the activity visually empty. */
+@media (min-width: 1181px) and (max-height: 700px) {
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 270px), 380px);
+    min-width: 330px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 290px), 350px);
+    min-width: 330px;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) and (max-height: 700px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-template-columns: minmax(0, 1fr) minmax(150px, .8fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    height: min(46dvh, 285px) !important;
+    min-height: 245px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-grid {
+    grid-template-columns: minmax(0, 1fr) 230px !important;
+    gap: 12px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    grid-template-columns: minmax(0, 1.15fr) minmax(270px, .85fr);
+    gap: 6px 10px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 5px 8px;
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control .cool-note {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    min-height: 92px;
+    height: 92px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls .button {
+    padding-block: 7px;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    margin-block: 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: 54px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-riddle] {
+    scroll-behavior: auto;
+  }
+}
+
+/* Language-neuron viewport fit.
+   The source page used CSS zoom on short screens, which made the interface
+   look tiny while it still required a long scroll. Keep type at a readable
+   size and let each desktop step use the full iframe as a compact workspace. */
+body[data-riddle="language-neuron"] {
+  zoom: 1 !important;
+}
+
+body[data-riddle="language-neuron"] .classification-reference figcaption,
+body[data-riddle="language-neuron"] .split-demo-category > span,
+body[data-riddle="language-neuron"] .split-demo-target.test .split-demo-category > span,
+body[data-riddle="language-neuron"] .prediction-tile span,
+body[data-riddle="language-neuron"] .score-orb span,
+body[data-riddle="language-neuron"] .result-gauge small,
+body[data-riddle="language-neuron"] .split-divider,
+body[data-riddle="language-neuron"] .split-divider span,
+body[data-riddle="language-neuron"] .training-status {
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+@media (min-width: 761px) {
+  body[data-riddle="language-neuron"] {
+    min-height: 100dvh;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="language-neuron"] .app-shell {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 100dvh;
+    padding: 8px 20px 10px;
+  }
+
+  body[data-riddle="language-neuron"] .app-header {
+    min-height: 34px;
+  }
+
+  body[data-riddle="language-neuron"] .brand {
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+
+  body[data-riddle="language-neuron"] .brand-mark svg {
+    width: 23px;
+  }
+
+  body[data-riddle="language-neuron"] .icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  body[data-riddle="language-neuron"] .step-track {
+    height: 4px;
+    margin: 5px 0 8px;
+  }
+
+  body[data-riddle="language-neuron"] .step-segment {
+    height: 4px;
+  }
+
+  body[data-riddle="language-neuron"] main {
+    min-height: 0;
+  }
+
+  body[data-riddle="language-neuron"] .screen.active {
+    position: relative;
+    min-height: 0;
+    height: calc(100dvh - 69px);
+  }
+
+  body[data-riddle="language-neuron"] .back-button {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    min-height: 34px;
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="language-neuron"] h1 {
+    margin-bottom: 10px;
+    font-size: clamp(34px, 3.15vw, 48px);
+  }
+
+  body[data-riddle="language-neuron"] h2 {
+    margin-bottom: 5px;
+    font-size: clamp(28px, 2.5vw, 34px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="language-neuron"] h3 {
+    margin-bottom: 6px;
+  }
+
+  body[data-riddle="language-neuron"] .lede {
+    max-width: none;
+    margin-bottom: 5px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="language-neuron"] .section-heading,
+  body[data-riddle="language-neuron"] .lab-heading {
+    max-width: none;
+    margin-bottom: 7px;
+    padding-left: 96px;
+  }
+
+  body[data-riddle="language-neuron"] .lab-heading p {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="language-neuron"] .eyebrow {
+    margin-bottom: 4px;
+    padding: 4px 9px;
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="language-neuron"] .button {
+    min-height: 38px;
+    padding: 7px 14px;
+  }
+
+  body[data-riddle="language-neuron"] .button.large {
+    padding: 9px 18px;
+    font-size: 16px;
+  }
+
+  body[data-riddle="language-neuron"] .actions,
+  body[data-riddle="language-neuron"] .screen-footer {
+    margin-top: 7px;
+  }
+
+  /* Result overview */
+  body[data-riddle="language-neuron"] #screen-aggregate.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .sentence-lines span {
+    display: inline;
+    white-space: normal !important;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .sentence-lines span + span::before {
+    content: " ";
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .results-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-card {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-plot-layout,
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame {
+    min-height: 0;
+    height: 100%;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame {
+    display: grid;
+    place-items: center;
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame img {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .axis-title-x {
+    margin-top: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .results-copy {
+    align-self: center;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 14px;
+    margin-bottom: 7px;
+    padding: 10px 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-card h3,
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-item {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .instruction-card {
+    margin-top: 0;
+    padding: 10px 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .instruction-card p {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  /* Manual classification */
+  body[data-riddle="language-neuron"] #screen-classify.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .lab-heading {
+    align-items: center;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sorter {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(210px, .8fr) minmax(310px, 1.2fr) minmax(210px, .8fr) !important;
+    grid-template-areas: "nonword current word" !important;
+    gap: 9px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sort-bin,
+  body[data-riddle="language-neuron"] #screen-classify .current-trial {
+    min-height: 0 !important;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sort-bin {
+    overflow: hidden;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .bin-header {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .bin-stack {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .mini-trace {
+    padding: 3px;
+    border-radius: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .mini-trace img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trial-index {
+    padding: 3px 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trial-question-row {
+    margin: 3px 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trace-stage {
+    min-height: 0;
+    height: 58px;
+    padding: 6px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trace-stage img {
+    height: 42px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .classification-reference {
+    min-height: 0;
+    margin-top: 5px;
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .classification-reference img {
+    width: 100%;
+    height: clamp(105px, 20dvh, 155px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .completion-panel {
+    min-height: 0;
+    margin-top: 0;
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sub-actions {
+    margin-top: 0;
+  }
+
+  /* Human-result review */
+  body[data-riddle="language-neuron"] #screen-review.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .lab-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-grid {
+    min-height: 0;
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-column,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-column {
+    min-height: 0;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-list,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-item,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-item {
+    min-width: 0;
+    padding: 3px;
+    border-width: 1px;
+    border-radius: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-item img,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-item img {
+    height: 17px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-status,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-status {
+    margin-top: 2px;
+    font-size: 12px !important;
+    line-height: 1.15;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-stack,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-stack {
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-card,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-card {
+    gap: 9px;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-number,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-number {
+    flex-basis: 32px;
+    height: 32px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-content label,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-content label {
+    margin-bottom: 3px;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .followup-label {
+    margin-top: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review textarea,
+  body[data-riddle="language-neuron"] #screen-ai-test textarea {
+    min-height: 45px;
+    height: 45px;
+    padding: 6px 8px;
+    resize: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review input,
+  body[data-riddle="language-neuron"] #screen-ai-test input {
+    min-height: 34px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .screen-footer {
+    margin: 0;
+  }
+
+  /* Four learning cards share one row instead of becoming a long 2x2 page. */
+  body[data-riddle="language-neuron"] #screen-ai-explain.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading {
+    max-width: none;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span {
+    display: inline;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span + span {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span + span::before {
+    content: " ";
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .important-note {
+    margin-top: 5px;
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-accordions {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-accordion {
+    height: auto;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-toggle {
+    min-height: 49px;
+    height: auto;
+    gap: 7px;
+    padding: 7px 9px;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .step-no {
+    flex-basis: 29px;
+    width: 29px;
+    height: 29px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-detail {
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-detail p {
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .step-illustration {
+    min-height: 0;
+    height: clamp(150px, 26dvh, 195px);
+    padding: 6px;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-category {
+    padding: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-mini-grid {
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-mini-grid img,
+  body[data-riddle="language-neuron"] #screen-ai-explain .training-labeled-examples img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo {
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-source,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target {
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-source > strong,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target > strong {
+    margin-bottom: 2px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-category {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 3px;
+    margin-top: 2px;
+    padding: 2px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target .split-demo-category {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target.test .split-demo-category {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-trace {
+    height: 13px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-paths {
+    height: 21px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model {
+    width: 100%;
+    max-width: 130px;
+    height: 74px;
+    padding: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model span {
+    font-size: 21px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model strong,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-example-caption strong {
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .single-example {
+    padding: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .single-example img {
+    height: 23px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .output-label {
+    min-width: 80px;
+    padding: 7px;
+    font-size: 14px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .screen-footer {
+    margin: 0;
+  }
+
+  /* Data split: show the full dataset as a dense, readable matrix. */
+  body[data-riddle="language-neuron"] #screen-split.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .lab-heading {
+    align-items: center;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .split-screen-copy {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px 12px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .balance-status {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .split-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(270px, .36fr) 32px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-zone {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    min-height: 0;
+    height: 100%;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-header h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-count {
+    font-size: 19px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-breakdown {
+    gap: 4px;
+    margin: 3px 0 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-breakdown span {
+    padding: 2px 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .train-zone .dataset-grid {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .test-zone .dataset-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-grid {
+    align-content: start;
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-card {
+    display: grid;
+    grid-template-rows: 11px 15px;
+    min-height: 29px;
+    height: 29px;
+    padding: 1px 2px;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-card img {
+    height: 11px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .truth-chip {
+    max-width: 100%;
+    margin-top: 0;
+    padding: 0 2px;
+    overflow: hidden;
+    font-size: 12px !important;
+    line-height: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .empty-state {
+    align-self: center;
+    margin: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .screen-footer {
+    margin: 0;
+  }
+
+  /* Training */
+  body[data-riddle="language-neuron"] #screen-ai-train.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train #aiTrainTitle {
+    font-size: clamp(27px, 2.45vw, 33px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-stage {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(420px, 1.25fr) auto minmax(260px, .75fr) !important;
+    gap: 12px;
+    margin: 0 auto;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-set-card {
+    padding: 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-set-card h3 {
+    margin-bottom: 6px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-groups {
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-groups > div {
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-thumbs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-thumbs img {
+    height: 20px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .ai-model-card {
+    min-height: 0;
+    height: 100%;
+    padding: 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .run-controls {
+    margin: 0;
+  }
+
+  /* Model test. The completed state uses the wide screen to keep the result,
+     reflection prompts and multiple-choice checks in view together. */
+  body[data-riddle="language-neuron"] #screen-ai-test.active {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test #aiTestTitle {
+    font-size: clamp(27px, 2.45vw, 33px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-instruction {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .fake-test-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(260px, .85fr) minmax(210px, .55fr) minmax(330px, 1.1fr) !important;
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue,
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-column {
+    min-height: 0;
+    height: 100%;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-progress {
+    margin-bottom: 4px;
+    font-size: 17px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-card {
+    min-height: 27px;
+    height: 27px;
+    padding: 2px;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-card img {
+    height: 20px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-model {
+    min-height: 0;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-columns {
+    min-height: 0;
+    height: 100%;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile {
+    min-height: 0;
+    padding: 2px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile span {
+    margin-top: 1px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test > .screen-footer {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test > .screen-footer:has(#checkModel[hidden]) {
+    display: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .paper-source {
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) {
+    grid-template-columns: minmax(360px, .38fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading heading"
+      "instruction instruction"
+      "test summary"
+      "source source";
+    gap: 5px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .section-heading {
+    grid-area: heading;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .test-instruction {
+    grid-area: instruction;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .fake-test-layout {
+    grid-area: test;
+    grid-template-columns: minmax(95px, .62fr) minmax(120px, .62fr) minmax(155px, 1.25fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .model-summary {
+    grid-area: summary;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .paper-source {
+    grid-area: source;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary {
+    position: relative;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "review mcq"
+      "questions interpretation"
+      "footer footer";
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary > .review-grid {
+    grid-area: review;
+    min-height: 0;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-fraction {
+    position: absolute;
+    z-index: 2;
+    top: -1px;
+    left: 50%;
+    margin: 0;
+    padding: 4px 8px;
+    border-radius: 9px;
+    font-size: 15px;
+    transform: translateX(-50%);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-questions {
+    grid-area: questions;
+    max-width: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card {
+    grid-area: interpretation;
+    max-width: none;
+    margin: 0;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card label {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card p {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-section {
+    grid-area: mcq;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-card {
+    min-height: 0;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-prompt {
+    margin-bottom: 3px;
+    padding-bottom: 3px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-option {
+    gap: 5px;
+    padding: 3px 2px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-option input {
+    min-height: 0;
+    margin-top: 2px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary > .screen-footer {
+    grid-area: footer;
+    margin: 0;
+  }
+}
+
+/* Short desktop intro cards: the image gives back enough height for the
+   answer button, avoiding a tiny residual scroll in riddles 2–4. */
+@media (min-width: 701px) and (max-height: 700px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+    padding-block: 10px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .visual-frame img {
+    height: clamp(190px, 34dvh, 260px) !important;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* The in-game chrome leaves about 543px of iframe height on a short laptop.
+   Give the riddle text the wider column there so the complete prompt, choices,
+   and continue action remain visible without scrolling. */
+@media (min-width: 901px) and (max-height: 600px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep0 {
+    row-gap: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3px 9px;
+    margin-block: 2px 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro > * {
+    margin: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro h2 {
+    font-size: 22px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro p {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+    gap: 7px;
+    padding: 6px 12px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-main {
+    grid-template-columns: minmax(275px, .76fr) minmax(0, 1.24fr);
+    gap: 14px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-title {
+    margin-bottom: 5px;
+    font-size: clamp(22px, 2.35vw, 30px);
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .story {
+    margin-block: 4px 7px;
+    font-size: 14px;
+    line-height: 1.32;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .task {
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs {
+    margin-top: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs .pill {
+    padding: 4px 7px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-continue-btn {
+    min-height: 38px;
+    margin-top: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Phones keep one natural page scroll; no nested work area is introduced. */
+@media (max-width: 760px) {
+  body[data-riddle="language-neuron"] .screen.active {
+    height: auto;
+    min-height: 0;
+  }
+
+  body[data-riddle="language-neuron"] .back-button {
+    position: static;
+    margin-bottom: 10px;
+  }
+
+  body[data-riddle="language-neuron"] .section-heading,
+  body[data-riddle="language-neuron"] .lab-heading {
+    padding-left: 0;
+  }
+
+  body[data-riddle="language-neuron"] .learning-accordions {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] .truth-chip,
+  body[data-riddle="language-neuron"] .prediction-tile span,
+  body[data-riddle="language-neuron"] .review-status,
+  body[data-riddle="language-neuron"] .classification-reference figcaption,
+  body[data-riddle="language-neuron"] .split-demo-category > span {
+    font-size: 12px !important;
+  }
+}
+
+/* Tablet-width WormMind circuit step: keep the two circuit diagrams in the
+   wide column and stack the explanation/question within the side column.
+   This comes after the shared short-viewport rules so the 996x543 in-game
+   iframe does not fall back to a long third row. */
+@media (min-width: 921px) and (max-width: 1199px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(275px, .45fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .back-action {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .screen-heading {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .circuit-comparison {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .network-question {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .screen-footer {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+/* Floor 2 in the short in-game iframe (roughly 543px high). The activity
+   remains one complete workspace: illustrations yield a little height and
+   instructions use the plentiful horizontal room. */
+@media (min-width: 821px) and (max-height: 600px) {
+  body[data-riddle="skin-temperature"] .shell,
+  body[data-riddle="movement-direction"] .shell,
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-bottom: 2px;
+  }
+
+  body[data-riddle="skin-temperature"] #intro .intro-grid {
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #intro .photo-card img {
+    height: min(83dvh, 450px) !important;
+    aspect-ratio: auto !important;
+    object-fit: cover;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    height: min(49dvh, 265px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    height: min(43dvh, 235px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side {
+    padding: 9px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side h3 {
+    margin-bottom: 5px;
+    font-size: 17px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side .instructions {
+    margin-top: 2px;
+    padding-inline-start: 18px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side .instructions li {
+    padding-block: 2px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    height: 100px;
+    min-height: 100px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls .button {
+    min-height: 38px;
+    padding-block: 7px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, .72fr);
+    gap: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions {
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.42;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions h3 {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions li {
+    padding-bottom: 4px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions .actions {
+    margin-top: 6px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, 240px);
+    min-width: 220px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 240px);
+    min-width: 220px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .result-stage.responsive-direction-stage {
+    grid-template-columns: minmax(220px, 240px) minmax(0, 1fr);
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  body[data-riddle="movement-direction"] .target-index {
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain > .back-nav {
+    min-height: 34px;
+    margin-bottom: 8px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-grid {
+    min-height: 0 !important;
+    gap: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy {
+    padding: 16px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .eyebrow {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy h2 {
+    margin-bottom: 6px;
+    font-size: clamp(27px, 2.5vw, 34px);
+    line-height: 1.12;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .lede {
+    margin-bottom: 7px;
+    font-size: 15.5px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .explain {
+    margin-bottom: 7px;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .button {
+    min-height: 38px;
+    padding-block: 7px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .anatomy-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .anatomy-card img {
+    max-height: calc(100dvh - 155px);
+    object-fit: contain;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+    grid-template-areas:
+      "head head"
+      "instructions instructions"
+      "scene gallery-head"
+      "scene gallery"
+      "scene gallery-hint"
+      "analysis analysis";
+    gap: 6px 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    min-height: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions {
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions > strong {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px;
+    margin-top: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li {
+    padding: 6px 34px 6px 7px;
+    font-size: 12.5px;
+    line-height: 1.28;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li::before {
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: min(41dvh, 222px);
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    padding: 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card .raster-panel {
+    margin-block: 5px;
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-raster-grid .raster-svg {
+    height: 44px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    gap: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-arrow {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-window {
+    padding-bottom: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex-basis: 94px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img {
+    height: 50px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    min-height: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .eyebrow {
+    margin-bottom: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head h2 {
+    margin-bottom: 2px;
+    font-size: clamp(27px, 2.45vw, 33px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .explain {
+    font-size: 13.5px;
+    line-height: 1.28;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .progress-count {
+    padding: 6px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    margin-block: 4px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-svg {
+    height: 42px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel {
+    padding: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 {
+    min-height: 25px;
+    margin-bottom: 3px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 span:last-child {
+    font-size: 10.5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .stimuli-grid {
+    gap: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus {
+    padding: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: 34px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 14px;
+    margin-top: 1px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .question {
+    font-size: 15px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    gap: 4px;
+    margin-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .option {
+    min-height: 32px;
+    padding: 4px 6px;
+    font-size: 12.5px;
+    line-height: 1.18;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box {
+    margin-top: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box label {
+    margin-bottom: 2px;
+    font-size: 12.5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box textarea {
+    min-height: 42px;
+    height: 42px;
+    padding: 5px 7px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .actions {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .button {
+    min-height: 36px;
+    padding-block: 6px;
+  }
+}
+
+@media (min-width: 821px) and (max-width: 1180px) and (max-height: 600px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    height: min(43dvh, 235px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual,
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 220px);
+    min-width: 210px;
+  }
+}
+
+/* On phones Floor 1 genuinely needs vertical space. Let the iframe document
+   provide that one natural scroll instead of trapping the user inside a
+   smaller nested workflow panel. */
+@media (max-width: 700px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep0:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    overflow: visible !important;
+    overscroll-behavior: auto;
+  }
+}
+
+/* Final cascade guard: the short-viewport rules above must not flatten the
+   record-stage rasters back into grids. */
+@media (min-width: 651px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(84px, 16%, 116px) !important;
+    height: 49px !important;
+    min-height: 0 !important;
+    padding: 4px 5px !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-0 { left: 0 !important; right: auto !important; top: 68% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-1 { left: 14% !important; right: auto !important; top: 39% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-2 { left: 31% !important; right: auto !important; top: 2% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-3 { left: 53% !important; right: auto !important; top: 2% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-4 { left: 70% !important; right: auto !important; top: 39% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-5 { left: auto !important; right: 0 !important; top: 68% !important; bottom: auto !important; }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(82px, 17%, 108px) !important;
+    height: 58px !important;
+    min-height: 0 !important;
+    padding: 5px 7px !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-0 { left: 50% !important; right: auto !important; top: 7% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-1 { left: 82% !important; right: auto !important; top: 18% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-2 { left: 90% !important; right: auto !important; top: 50% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-3 { left: 82% !important; right: auto !important; top: 82% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-4 { left: 50% !important; right: auto !important; top: 93% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-5 { left: 18% !important; right: auto !important; top: 82% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-6 { left: 10% !important; right: auto !important; top: 50% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-7 { left: 18% !important; right: auto !important; top: 18% !important; bottom: auto !important; }
+
+  body[data-riddle="movement-direction"] #record #plotRing .mini-title {
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #plotRing .mini-title small {
+    font-size: 9.5px !important;
+  }
+}
+
+@media (min-width: 901px) {
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-2 {
+    left: calc(83% + 8px + clamp(41px, 8.5%, 54px)) !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-6 {
+    left: calc(17% - 8px - clamp(41px, 8.5%, 54px)) !important;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 650px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    width: min(58%, 540px) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    height: 120px !important;
+    min-height: 120px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .board-stage.responsive-direction-stage {
+    width: min(100%, 430px) !important;
+    max-width: 430px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: 230px !important;
+    min-height: 230px !important;
+  }
+}
+
+/* Anchor each temperature raster to the gauge geometry, with a small, stable
+   clearance from the coloured arc at every desktop width. */
+@media (min-width: 901px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    inset: auto auto -4px 50% !important;
+    width: min(62%, 620px) !important;
+    height: auto !important;
+    aspect-ratio: 700 / 390;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition {
+    width: clamp(92px, 19%, 116px) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-0 {
+    left: 11.4% !important;
+    right: auto !important;
+    top: 65% !important;
+    transform: translate(calc(-100% - 8px), -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-1 {
+    left: calc(22.725881% - clamp(23px, 4.75%, 29px) - 17.906854px) !important;
+    right: auto !important;
+    top: calc(33.097736% - clamp(23px, 8.525641%, 29px) - 17.906854px) !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-2 {
+    left: 38.8% !important;
+    right: auto !important;
+    top: 12.8% !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-3 {
+    left: 61.2% !important;
+    right: auto !important;
+    top: 12.8% !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-4 {
+    left: calc(77.274119% + clamp(23px, 4.75%, 29px) + 17.906854px) !important;
+    right: auto !important;
+    top: calc(33.097736% - clamp(23px, 8.525641%, 29px) - 17.906854px) !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-5 {
+    left: 88.6% !important;
+    right: auto !important;
+    top: 65% !important;
+    transform: translate(8px, -50%) !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 650px) {
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    bottom: -22px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    bottom: -22px !important;
+    width: min(58%, 540px) !important;
+  }
+}
+
+/* Keep decimal threshold values in their logical LTR order inside RTL SVG text. */
+g[aria-label^="סף ליצירת פוטנציאל פעולה"] > text {
+  unicode-bidi: plaintext !important;
+}
+
+</style>
+
+</head>
+<body data-riddle="mouse-place-cells">
+  <main class="app">
+    <header class="app-header">
+      <div>
+        <h1>איך עכבר יודע איפה הוא נמצא?</h1>
+      </div>
+      <div class="step-badge" id="stepBadge">שלב 1 מתוך 5</div>
+    </header>
+    <div class="stepper" id="stepper" aria-label="התקדמות הפעילות"></div>
+    <section class="scene-shell" aria-label="סימולציית עכבר ותאי מיקום">
+      <div class="scene-title" id="sceneTitle">העכבר בקופסה</div>
+      <canvas id="scene" role="img" aria-label="מבט מלמעלה על עכבר שמשוטט בתוך קופסה גדולה."></canvas>
+      <div class="screen-panel" id="screenPanel"></div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const canvas=document.getElementById('scene'), ctx=canvas.getContext('2d');
+      const panel=document.getElementById('screenPanel'), title=document.getElementById('sceneTitle');
+      const badge=document.getElementById('stepBadge'), stepper=document.getElementById('stepper');
+      const W=1120,H=660, TAU=Math.PI*2, ROUTE_DURATION=30,ROUTE_FPS=60,box={x:46,y:38,w:1028,h:584}, inner={x:65,y:57,w:990,h:546};
+      let routeFrames={single:[],network:[]}, routeSpikes={single:[[]],network:Array.from({length:6},()=>[])}, routeWindows={single:[],network:[]};
+      const timeColor=(index,alpha=1)=>`hsla(${(198+index*137.508)%360},52%,72%,${alpha})`;
+      const neuronColors=['#e58b70','#71c1a5','#83a9e3','#d3a65e','#b18bd2','#62bdc9'];
+      const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+      const labels=['שמאל עליון','מרכז עליון','ימין עליון','שמאל תחתון','מרכז תחתון','ימין תחתון'];
+      const screens=['intro','singleObserve','singleQuiz','networkObserve','networkQuiz'];
+      let screen='intro', dpr=1, time=0, last=performance.now(), running=true, speed=1.6, elapsed=0;
+      let staticLayer,staticCtx,mouse,grains=[],seeds=[],paws=[],motes=[];
+      const arena={x:46,y:38,w:1028,h:584}, dish={x:895,y:168,r:37};
+      const shelters=[{x:862,y:444,w:120,h:73,a:-.12},{x:228,y:205,w:91,h:56,a:.08}];
+      let traceCanvas,traceCtx,traceData=Array.from({length:6},()=>[]), quizCursor=0, activityTime=0, activityAccumulator=0, activityHistory=Array.from({length:6},()=>[]);
+      let points={single:0,network:0}, chosen={single:[],network:[]}, revealed={single:false,network:false}, replayCompleted={single:false,network:false}, reflection={single:['',''],network:['','']};
+      let networkMapping=Array(6).fill(''), mappingOpen=-1;
+      let replayTime={single:0,network:0}, replayPlaying={single:false,network:false}, painting=false, paintedZones=new Set();
+      const seed=724191; let rngSeed=seed;
+      const random=()=>{rngSeed=(rngSeed*1664525+1013904223)>>>0;return rngSeed/4294967296};
+      const rand=(a,b)=>a+random()*(b-a), lerp=(a,b,t)=>a+(b-a)*t;
+      const furMarks=Array.from({length:68},(_,i)=>({x:Math.sin(i*12.9898)*9,y:Math.cos(i*7.123+1.7)*18,dx:Math.sin(i*3.731)*1.3,dy:2+((i*17)%13)/10,light:i%3===0}));
+      function neuronSvg(color='#bcd49d'){return `<svg class="neuron-svg" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round"><path d="M50 47 50 13M50 28 29 10M50 34 72 13M46 43 19 35M54 43 81 34M50 55 50 89M46 59 26 82M54 59 75 84"/><path d="M50 18 43 9M50 18 57 9M29 10 20 12M29 10 30 2M72 13 80 7M72 13 72 4M19 35 10 29M19 35 8 39M81 34 91 29M81 34 92 39M50 89 43 97M50 89 57 97M26 82 17 88M26 82 26 92M75 84 84 91M75 84 75 94"/></g><circle cx="50" cy="50" r="13" fill="#d9c28b" stroke="#f0ddb0" stroke-width="2"/></svg>`}
+      function chart(){return `<canvas id="trace" class="trace-canvas" aria-label="תרשים פוטנציאלי פעולה לאורך זמן"></canvas><div class="trace-legend"><span>פוטנציאלי פעולה</span><span>זמן ←</span></div>`}
+      function setScreen(s){
+        screen=s;
+        if(s==='singleQuiz')buildRouteData('single')
+        if(s==='networkQuiz')buildRouteData('network')
+        if(s==='singleObserve'||s==='networkObserve'){activityTime=0;activityAccumulator=0;activityHistory=Array.from({length:6},()=>[])}
+        render();resize();last=performance.now()
+      }
+      function stepNum(){return screens.indexOf(screen)+1}
+      function render(){
+        document.body.classList.toggle('intro-screen',screen==='intro');
+        document.body.classList.toggle('screen-revealed',(screen==='singleQuiz'&&revealed.single)||(screen==='networkQuiz'&&revealed.network));
+        const n=stepNum(); badge.textContent=`שלב ${n} מתוך 5`; stepper.innerHTML=screens.map((_,i)=>`<span class="${i<n-1?'done':i===n-1?'current':''}"></span>`).join('');
+        if(screen==='intro'){
+          title.textContent='העכבר בקופסה';panel.innerHTML=`<div class="story-card"><p>העכבר שלפנינו משוטט לו בתוך הקופסה. אבל איך הוא ידע איפה בתוך הקופסה הוא נמצא?</p><p>בדיוק בשביל זה יש לו במוח ״תא מיקום״, <strong>שמגביר</strong> את קצב פוטנציאלי הפעולה שלו רק כשהעכבר נמצא <strong>במקום מסוים</strong>.</p><button class="primary" data-action="start">הפעל תא מיקום אחד</button></div>`;
+        } else if(screen==='singleObserve'){
+          title.textContent='התבוננו בפעילות של תא המיקום.';panel.innerHTML=`<div class="lesson-grid"><section class="panel-card"><div class="card-heading"><strong>תא מיקום אחד</strong></div><div class="neuron-row">${neuronSvg(neuronColors[1])}<div><div class="neuron-name">נוירון 1</div><div class="neuron-sub">עקבו אחרי השינוי בקצב הפעילות לפי המיקום של העכבר</div></div></div></section><section class="panel-card"><div class="card-heading"><strong>רכבת פוטנציאלי פעולה</strong><span class="card-note">העכבר משוטט; שימו לב מתי קצב הירי עולה</span></div>${chart()}</section></div><div class="reveal-actions"><button class="primary" data-action="quiz1">פיענוח על ידי תא מיקום אחד</button></div>`;
+        } else if(screen==='singleQuiz'){
+          title.textContent='פענחו את מיקום העכבר לפי הפעילות של תא המיקום';panel.innerHTML=quizMarkup('single');
+        } else if(screen==='networkObserve'){
+          title.textContent='התבוננו בפעילות של רשת נוירוני המיקום.';panel.innerHTML=`<div class="network-layout"><section class="panel-card"><div class="card-heading"><strong>רשת של שישה נוירוני מיקום</strong><span class="card-note">הפעילות מסומנת באותו צבע כמו הנוירון</span></div><div class="network-neurons">${[2,5,1,4,0,3].map(i=>`<div class="network-neuron ${mappingOpen===i?'map-open':''}" data-neuron="${i}" style="--neuron-color:${neuronColors[i]}">${neuronSvg(neuronColors[i])}<strong>תא מיקום</strong><button class="map-trigger" data-map-trigger="${i}" aria-label="בחרו משבצת לתא המיקום">${mapPreviewMarkup(i)}</button><div class="map-picker" data-map-picker="${i}" ${mappingOpen===i?'':'hidden'}><div class="map-picker-grid">${labels.map((name,z)=>{const used=networkMapping.some((value,other)=>other!==i&&value===String(z));return `<button class="map-tile ${networkMapping[i]===String(z)?'selected':''}" style="--neuron-color:${neuronColors[i]}" data-map-select="${i}" data-zone="${z}" aria-label="${name}" title="${name}" ${used?'disabled':''}>${z+1}</button>`}).join('')}</div><button class="map-clear" data-map-clear="${i}" ${networkMapping[i]===''?'hidden':''}>בטלו בחירה</button></div></div>`).join('')}</div><div class="mapping-title">בחרו לכל נוירון את המשבצת שבה הוא פעיל. כל משבצת יכולה להיות משויכת לנוירון אחד.</div><div class="mapping-status" data-map-status></div></section><section class="panel-card"><div class="card-heading"><strong>פעילות הרשת לאורך זמן</strong></div>${chart()}</section></div><div class="reveal-actions"><button class="primary" data-action="quiz2" disabled>עברו לתרגול הפענוח</button></div>`;syncMappingUI();
+        } else {title.textContent='פענחו את מיקום העכבר מרשת תאי המיקום';panel.innerHTML=quizMarkup('network')}
+        fitTrace(); if(staticLayer)draw();
+      }
+      function quizMarkup(kind){
+        const isSingle=kind==='single', count=chosen[kind].filter(x=>x.size).length;
+        const legend=!isSingle?`<div class="network-map-legend" aria-label="הבחירה שלכם: מיפוי הנוירונים למשבצות">${Array.from({length:6},(_,z)=>{const ch=networkMapping.findIndex(value=>value===String(z));return `<div class="map-legend-tile" style="--neuron-color:${ch<0?'transparent':neuronColors[ch]}" aria-label="משבצת ${z+1}${ch<0?': לא שויכה':': תא מיקום'}">${ch<0?'':`<i></i>`}</div>`}).join('')}</div>`:'';
+        let html=revealed[kind]?`<div class="quiz-layout"><section class="panel-card quiz-lesson revealed-lesson"><p class="reveal-caption">האזור המסומן הוא האזור שבו חזיתם/ן שהעכבר נמצא לפי ${isSingle?'פעילות תא המיקום':'פעילות רשת תאי המיקום'}</p><p class="prediction-check">האם החיזוי שלכם/ן מדויק?</p><div class="card-heading"><strong>${isSingle?'פעילות תא המיקום':'פעילות רשת תאי המיקום'}</strong></div>${chart()}${legend}</section></div>`:`<div class="quiz-layout"><section class="panel-card quiz-lesson"><div class="task-intro"><p>בכל אחד מ־${routeWindows[kind].length} פרקי הזמן, סמנו על תמונת הקופסה את כל האזורים שבהם העכבר עשוי להימצא. ניתן לגרור בין כמה אזורים בקופסה. בסיום הסימון תעברו אוטומטית לפרק הזמן הבא. כדי לתקן תשובה, לחצו על פרק זמן קודם בגרף.</p></div>${chart()}${legend}<div class="quiz-controls"><button class="primary" data-action="reveal" ${count<chosen[kind].length||points[kind]<chosen[kind].length?'disabled':''}>הציגו את המסלול האמיתי של העכבר</button></div></section></div>`;
+        if(revealed[kind]&&replayCompleted[kind]){
+          html+=`<section class="reveal-card compact"><button class="secondary" data-action="replay">הפעילו שוב את המסלול</button><div class="reflection"><label>${isSingle?'איזה מידע נתן לנו תא מיקום אחד?':'איזה מידע נותנת לנו רשת של תאי מיקום?'}<textarea data-ref="0" placeholder="כיתבו במילים שלכם/ן">${escapeHtml(reflection[kind][0])}</textarea></label><label>${isSingle?'איזה מידע עדיין חסר?':'מה היתרון של הרשת על פני הנוירון הבודד?'}<textarea data-ref="1" placeholder="כיתבו במילים שלכם/ן">${escapeHtml(reflection[kind][1])}</textarea></label></div><div class="reveal-actions">${isSingle?`<button class="primary" data-action="network" ${reflection.single.every(x=>x.trim())?'':'disabled'}>מעבר לרשת של תאי מיקום</button>`:`<button class="primary" data-action="finish" ${reflection.network.every(x=>x.trim())?'':'disabled'}>סיום הפעילות</button>`}</div></section>`;
+        }
+        return html;
+      }
+      function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+      function reportText(value){const text=String(value??'').trim();return text?escapeHtml(text).replace(/\n/g,'<br>'):'—'}
+      function reportZoneNames(set){return [...(set||[])].sort((a,b)=>a-b).map(i=>labels[i]||`משבצת ${i+1}`).join(', ')||'לא סומן'}
+      function reportSelectionRows(kind){
+        const rows=(chosen[kind]||[]).map((set,index)=>`<tr><td>${kind==='single'?'תא מיקום בודד':'רשת תאי מיקום'}</td><td>קטע זמן ${index+1}</td><td>${escapeHtml(reportZoneNames(set))}</td></tr>`).join('');
+        return rows||'<tr><td colspan="3">לא נשמרו סימוני אזורים.</td></tr>';
+      }
+      function downloadAnswersReport(){
+        const mappingRows=networkMapping.map((zone,index)=>`<tr><td>נוירון ${index+1}</td><td>${zone===''?'לא שויך':escapeHtml(labels[Number(zone)]||`משבצת ${Number(zone)+1}`)}</td></tr>`).join('');
+        const report=`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>תשובות חידת תאי המיקום</title><style>body{font-family:Arial,"Noto Sans Hebrew",sans-serif;direction:rtl;color:#1e2a24;line-height:1.6}h1{color:#315b45}h2{margin-top:24px;color:#315b45;border-bottom:1px solid #b8cbbd;padding-bottom:4px}table{width:100%;border-collapse:collapse;margin:10px 0 18px}th,td{border:1px solid #b8cbbd;padding:7px;text-align:right;vertical-align:top}th{background:#e8f0e7}.meta{color:#5f7064;font-size:11px}</style></head><body><h1>תשובות המשתמש/ת — חידת תאי מיקום</h1><p class="meta">נוצר אוטומטית בסיום החידה</p><h2>סימוני אזורים</h2><table><thead><tr><th>תרגול</th><th>קטע זמן</th><th>האזורים שסומנו</th></tr></thead><tbody>${reportSelectionRows('single')}${reportSelectionRows('network')}</tbody></table><h2>מיפוי רשת הנוירונים</h2><table><thead><tr><th>נוירון</th><th>המשבצת שנבחרה</th></tr></thead><tbody>${mappingRows||'<tr><td colspan="2">לא נשמר מיפוי.</td></tr>'}</tbody></table><h2>נימוקים ותשובות מילוליות</h2><table><thead><tr><th>חלק</th><th>תשובה</th></tr></thead><tbody><tr><td>תא מיקום בודד — איזה מידע נתן לנו?</td><td>${reportText(reflection.single[0])}</td></tr><tr><td>תא מיקום בודד — איזה מידע עדיין חסר?</td><td>${reportText(reflection.single[1])}</td></tr><tr><td>רשת תאי מיקום — איזה מידע היא נותנת?</td><td>${reportText(reflection.network[0])}</td></tr><tr><td>רשת תאי מיקום — מה היתרון שלה?</td><td>${reportText(reflection.network[1])}</td></tr></tbody></table><\/body><\/html>`;
+        const textOnlyReport=`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>קומה 3 - חידה 1</title><style>body{font-family:Arial,"Noto Sans Hebrew",sans-serif;direction:rtl;color:#1e2a24;line-height:1.6;margin:36px}h1{color:#315b45}h2{margin-top:24px;color:#315b45;border-bottom:1px solid #b8cbbd;padding-bottom:4px}table{width:100%;border-collapse:collapse;margin:10px 0 18px}th,td{border:1px solid #b8cbbd;padding:9px;text-align:right;vertical-align:top}th{width:42%;background:#e8f0e7}</style></head><body><h1>תשובות מילוליות — תאי מיקום</h1><table><tbody><tr><th>תא מיקום בודד — איזה מידע נתן לנו?</th><td>${reportText(reflection.single[0])}</td></tr><tr><th>תא מיקום בודד — איזה מידע עדיין חסר?</th><td>${reportText(reflection.single[1])}</td></tr><tr><th>רשת תאי מיקום — איזה מידע היא נותנת?</th><td>${reportText(reflection.network[0])}</td></tr><tr><th>רשת תאי מיקום — מה היתרון שלה?</th><td>${reportText(reflection.network[1])}</td></tr></tbody></table><\/body><\/html>`;
+        const blob=new Blob(['\ufeff',textOnlyReport],{type:'application/msword'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+        link.href=url;link.download='קומה 3 - חידה 1 - תאי מיקום.doc';link.rel='noopener';document.body.appendChild(link);link.click();link.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1200);
+      }
+      panel.addEventListener('input',e=>{if(e.target.matches('[data-ref]')){const k=screen==='singleQuiz'?'single':'network';reflection[k][Number(e.target.dataset.ref)]=e.target.value;const btn=panel.querySelector('[data-action="network"], [data-action="finish"]');if(btn)btn.disabled=!reflection[k].every(x=>x.trim())}});
+      function resize(){const appWidth=document.querySelector('.app').clientWidth,viewport=document.documentElement.clientHeight,panelH=panel.offsetHeight,titleH=title.offsetHeight,headerH=document.querySelector('.app-header').offsetHeight,stepH=stepper.offsetHeight,available=Math.max(210,viewport-panelH-titleH-headerH-stepH-parseFloat(getComputedStyle(document.body).paddingTop)*2-46),fitWidth=Math.min(appWidth,available*W/H),width=screen==='intro'?fitWidth:Math.min(fitWidth,Math.max(280,viewport-150));canvas.style.width=width+'px';const r=canvas.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.width*H/W*dpr);ctx.setTransform(canvas.width/W,0,0,canvas.width/W,0,0);buildTexture();fitTrace()}
+      function fitTrace(){traceCanvas=panel.querySelector('#trace');traceCtx=null;if(!traceCanvas)return;const r=traceCanvas.getBoundingClientRect();if(!r.width)return;const d=Math.min(2,devicePixelRatio||1);traceCanvas.width=Math.round(r.width*d);traceCanvas.height=Math.round(r.height*d);traceCtx=traceCanvas.getContext('2d');traceCtx.setTransform(traceCanvas.width/1120,0,0,traceCanvas.height/132,0,0)}
+      function zone(x,y){const col=Math.max(0,Math.min(2,Math.floor((x-inner.x)/inner.w*3))), row=y<inner.y+inner.h/2?0:1;return row*3+col}
+      function zoneRect(i){return{x:inner.x+(i%3)*inner.w/3,y:inner.y+Math.floor(i/3)*inner.h/2,w:inner.w/3,h:inner.h/2}}
+      function adjacentZones(z){const row=Math.floor(z/3),col=z%3,out=[];if(row)out.push(z-3);if(row<1)out.push(z+3);if(col)out.push(z-1);if(col<2)out.push(z+1);return out}
+      function buildRouteData(kind){
+        const dt=1/ROUTE_FPS,steps=ROUTE_DURATION*ROUTE_FPS,channels=kind==='single'?1:6;
+        // Create one continuous, mouse-like path, then derive every neural interval from it.
+        const frames=[],start=zoneRect(1),m={x:start.x+start.w*.24,y:start.y+start.h*.70,a:0,vx:0,vy:0,target:{x:start.x+start.w*.72,y:start.y+start.h*.34}};
+        let rest=0,routeTargetIndex=0;frames.push({x:m.x,y:m.y,a:m.a,state:'explore'});
+        for(let n=1;n<=steps;n++){
+          if(rest>0){rest-=dt;m.vx*=Math.pow(.02,dt);m.vy*=Math.pow(.02,dt)}
+          else{
+            const dx=m.target.x-m.x,dy=m.target.y-m.y,dist=Math.hypot(dx,dy)||1,desired=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(desired-m.a),Math.cos(desired-m.a));
+            m.a+=clamp(diff,-dt*(1.35+Math.min(1,Math.abs(diff))*.5),dt*(1.35+Math.min(1,Math.abs(diff))*.5));let desiredSpeed=rand(54,64)*speed;if(dist<48)desiredSpeed*=.58;
+            const margin=74,pushX=(m.x<inner.x+margin?1:0)-(m.x>inner.x+inner.w-margin?1:0),pushY=(m.y<inner.y+margin?1:0)-(m.y>inner.y+inner.h-margin?1:0);if((pushX||pushY)&&random()<.5)m.a+=Math.atan2(pushY,pushX)*dt*.7;
+            const blend=1-Math.exp(-dt*2.4);m.vx=lerp(m.vx,Math.cos(m.a)*desiredSpeed,blend);m.vy=lerp(m.vy,Math.sin(m.a)*desiredSpeed,blend);m.x=clamp(m.x+m.vx*dt,inner.x+30,inner.x+inner.w-30);m.y=clamp(m.y+m.vy*dt,inner.y+30,inner.y+inner.h-30);
+            if(dist<17){rest=rand(.9,2.2);m.vx=0;m.vy=0;}
+            if(dist<30)m.target=routeWanderTarget(routeTargetIndex++);
+          }
+          frames.push({x:m.x,y:m.y,a:m.a,state:rest>0?'sniff':'explore'});
+        }
+        routeFrames[kind]=frames;routeSpikes[kind]=Array.from({length:channels},()=>[]);
+        const sampleDt=.08,sampleCount=Math.round(ROUTE_DURATION/sampleDt),states=[];
+        for(let i=0;i<sampleCount;i++){
+          const sampleTime=(i+.5)*sampleDt,p=routePosition(kind,sampleTime),z=zone(p.x,p.y),state=kind==='single'?(z===1?1:0):z;states.push(state);
+        }
+        const windows=[];let runStart=0;
+        for(let i=1;i<=sampleCount;i++)if(i===sampleCount||states[i]!==states[runStart]){
+          const startTime=runStart*sampleDt,endTime=i*sampleDt,state=states[runStart],duration=endTime-startTime;
+          for(let ch=0;ch<channels;ch++){
+            const active=kind==='single'?state===1:state===ch;
+            if(active){for(let sample=runStart;sample<i;sample++)routeSpikes[kind][ch].push(sample*sampleDt+sampleDt*(.25+random()*.5))}
+            else{let spontaneous=0;const cap=Math.floor(duration*.5);for(let sample=runStart;sample<i&&spontaneous<cap;sample++)if(random()<.025){routeSpikes[kind][ch].push(sample*sampleDt+sampleDt*(.25+random()*.5));spontaneous++}}
+          }
+          const counts=routeSpikes[kind].map(row=>row.filter(t=>t>=startTime&&t<endTime).length);
+          windows.push({start:startTime,end:endTime,duration,counts,zone:kind==='single'?(state?1:-1):state,state});runStart=i;
+        }
+        routeWindows[kind]=windows;points[kind]=0;chosen[kind]=Array.from({length:windows.length},()=>new Set());
+      }
+      function routeWanderTarget(index){
+        const visitOrder=[0,3,4,1,2,5],z=visitOrder[index%visitOrder.length],r=zoneRect(z);
+        return{x:r.x+r.w*rand(.38,.62),y:r.y+r.h*rand(.38,.62)};
+      }
+      function mapPreviewMarkup(neuron){const selected=Number(networkMapping[neuron]);return `<span class="map-preview" aria-hidden="true">${labels.map((_,z)=>`<i class="${networkMapping[neuron]!==''&&selected===z?'selected':''}"></i>`).join('')}</span>`}
+      function buildTexture() {
+        staticLayer = document.createElement('canvas');
+        staticLayer.width = W;
+        staticLayer.height = H;
+        staticCtx = staticLayer.getContext('2d');
+        const c = staticCtx;
+
+        const backdrop = c.createLinearGradient(0, 0, W, H);
+        backdrop.addColorStop(0, '#383d34'); backdrop.addColorStop(.5, '#2b332d'); backdrop.addColorStop(1, '#202a24');
+        c.fillStyle = backdrop; c.fillRect(0, 0, W, H);
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,.48)'; c.shadowBlur = 22; c.shadowOffsetY = 9;
+        roundRect(c, arena.x, arena.y, arena.w, arena.h, 19, '#c5c2a6');
+        c.restore();
+
+        const bed = c.createLinearGradient(inner.x, inner.y, inner.x + inner.w, inner.y + inner.h);
+        bed.addColorStop(0, '#d8d0ad'); bed.addColorStop(.48, '#c9c19c'); bed.addColorStop(1, '#bdb58f');
+        roundRect(c, inner.x, inner.y, inner.w, inner.h, 8, bed);
+
+        // Packed, uneven bedding: a soft base plus fine fibers and scattered husks.
+        c.save(); c.beginPath(); roundRectPath(c, inner.x, inner.y, inner.w, inner.h, 8); c.clip();
+        const wash = c.createRadialGradient(520, 290, 30, 520, 310, 650);
+        wash.addColorStop(0, 'rgba(250,245,216,.13)'); wash.addColorStop(1, 'rgba(84,79,53,.12)');
+        c.fillStyle = wash; c.fillRect(inner.x, inner.y, inner.w, inner.h);
+        for (let i = 0; i < 7400; i++) {
+          const x = rand(inner.x, inner.x + inner.w), y = rand(inner.y, inner.y + inner.h);
+          const len = rand(1, 7), ang = rand(-.65, .65);
+          c.strokeStyle = random() > .52 ? 'rgba(250,244,213,.22)' : 'rgba(103,93,62,.15)';
+          c.lineWidth = rand(.35, 1.15); c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len); c.stroke();
+        }
+        for (let i = 0; i < 340; i++) {
+          const x = rand(inner.x, inner.x + inner.w), y = rand(inner.y, inner.y + inner.h);
+          c.fillStyle = random() > .45 ? 'rgba(247,239,203,.24)' : 'rgba(108,95,60,.14)';
+          c.beginPath(); c.ellipse(x, y, rand(1, 3.7), rand(.5, 1.2), rand(-.8, .8), 0, TAU); c.fill();
+        }
+        c.restore();
+
+        // Clear acrylic side walls, with a slim rim that reads as a top-down enclosure.
+        c.strokeStyle = 'rgba(245,244,218,.83)'; c.lineWidth = 2.2;
+        roundRectStroke(c, inner.x + 2, inner.y + 2, inner.w - 4, inner.h - 4, 7);
+        c.strokeStyle = 'rgba(55,61,52,.56)'; c.lineWidth = 1;
+        roundRectStroke(c, arena.x + 7, arena.y + 7, arena.w - 14, arena.h - 14, 14);
+        const corners = [[inner.x+2,inner.y+2],[inner.x+inner.w-2,inner.y+2],[inner.x+2,inner.y+inner.h-2],[inner.x+inner.w-2,inner.y+inner.h-2]];
+        corners.forEach(([x,y]) => { c.fillStyle='#eee8cc'; c.beginPath(); c.arc(x,y,4,0,TAU); c.fill(); c.strokeStyle='rgba(70,72,58,.4)'; c.lineWidth=1; c.stroke(); });
+        c.strokeStyle = 'rgba(246,243,220,.15)'; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(arena.x+26, arena.y+8); c.lineTo(arena.x+arena.w-26, arena.y+8); c.stroke();
+
+        // Bedding ridges and scattered food.
+        seeds = [];
+        for (let i=0;i<23;i++) {
+          let x=rand(inner.x+70,inner.x+inner.w-75), y=rand(inner.y+55,inner.y+inner.h-55);
+          if (Math.hypot(x-dish.x,y-dish.y)<55 || shelters.some(s=>Math.abs(x-s.x)<s.w/2+30&&Math.abs(y-s.y)<s.h/2+30)) { i--; continue; }
+          const seedObj={x,y,a:rand(0,TAU),s:rand(.65,1.15)}; seeds.push(seedObj); drawSeed(c,seedObj);
+        }
+
+        drawDish(c);
+        shelters.forEach((s,i)=>drawShelter(c,s,i));
+
+        // Soft highlights on the glass edges.
+        c.strokeStyle='rgba(255,255,255,.09)'; c.lineWidth=1;
+        c.beginPath(); c.moveTo(arena.x+23,arena.y+5); c.lineTo(arena.x+arena.w-23,arena.y+5); c.stroke();
+      }
+
+      function roundRect(c,x,y,w,h,r,fill) { c.fillStyle=fill; c.beginPath(); roundRectPath(c,x,y,w,h,r); c.fill(); }
+      function roundRectPath(c,x,y,w,h,r) { c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+      function roundRectStroke(c,x,y,w,h,r) { c.beginPath(); roundRectPath(c,x,y,w,h,r); c.stroke(); }
+
+      function drawSeed(c,s) {
+        c.save(); c.translate(s.x,s.y); c.rotate(s.a); c.scale(s.s,s.s);
+        c.shadowColor='rgba(61,49,25,.22)'; c.shadowBlur=4; c.shadowOffsetY=2;
+        c.fillStyle='#847247'; c.beginPath(); c.ellipse(0,0,5.5,2.5,0,0,TAU); c.fill();
+        c.shadowColor='transparent'; c.strokeStyle='rgba(244,220,158,.76)'; c.lineWidth=.8; c.beginPath(); c.moveTo(-3.7,0); c.quadraticCurveTo(0,-1,3.6,.1); c.stroke();
+        c.restore();
+      }
+
+      function drawDish(c) {
+        const x=dish.x,y=dish.y;
+        c.save(); c.shadowColor='rgba(40,38,27,.35)'; c.shadowBlur=12; c.shadowOffsetY=5;
+        c.fillStyle='#857f6b'; c.beginPath(); c.ellipse(x,y+2,40,35,0,0,TAU); c.fill();
+        c.shadowColor='transparent';
+        const ceramic=c.createLinearGradient(x-25,y-25,x+24,y+25); ceramic.addColorStop(0,'#f0ead7'); ceramic.addColorStop(.55,'#c8c2ae'); ceramic.addColorStop(1,'#9f9b8a');
+        c.fillStyle=ceramic; c.beginPath(); c.ellipse(x,y,37,32,0,0,TAU); c.fill();
+        c.strokeStyle='rgba(255,255,245,.76)'; c.lineWidth=2.2; c.beginPath(); c.ellipse(x,y-1,33,28,0,0,TAU); c.stroke();
+        const water=c.createRadialGradient(x-9,y-10,2,x,y,28); water.addColorStop(0,'#9ab7aa'); water.addColorStop(1,'#52756a');
+        c.fillStyle=water; c.beginPath(); c.ellipse(x,y-1,27.5,22,0,0,TAU); c.fill();
+        c.strokeStyle='rgba(213,234,218,.4)'; c.lineWidth=1; c.beginPath(); c.ellipse(x,y-1,25,20,0,0,TAU); c.stroke();
+        c.fillStyle='rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(x-8,y-9,7,2.2,-.3,0,TAU); c.fill();
+        c.restore();
+      }
+
+      function drawShelter(c,s,i) {
+        c.save(); c.translate(s.x,s.y); c.rotate(s.a);
+        c.shadowColor='rgba(47,39,23,.34)'; c.shadowBlur=12; c.shadowOffsetY=6;
+        const g=c.createLinearGradient(-s.w/2,-s.h/2,s.w/2,s.h/2); g.addColorStop(0,'#a78055'); g.addColorStop(.48,'#87623d'); g.addColorStop(1,'#674c31');
+        c.fillStyle=g; c.beginPath(); c.roundRect(-s.w/2,-s.h/2,s.w,s.h,9); c.fill(); c.shadowColor='transparent';
+        c.strokeStyle='rgba(232,201,147,.55)'; c.lineWidth=1.3; c.beginPath(); c.roundRect(-s.w/2+3,-s.h/2+3,s.w-6,s.h-6,7); c.stroke();
+        // Tube opening sits toward the center of the box.
+        const sign=(i===0)?-1:1;
+        const ox=sign*(s.w/2-5), oy=0;
+        c.fillStyle='#3d3023'; c.beginPath(); c.ellipse(ox,oy,11,17,s.a*.1,0,TAU); c.fill();
+        c.strokeStyle='rgba(213,176,121,.68)'; c.lineWidth=2; c.beginPath(); c.ellipse(ox,oy,13,19,0,0,TAU); c.stroke();
+        c.strokeStyle='rgba(251,223,176,.25)'; c.lineWidth=1; c.beginPath(); c.moveTo(-s.w/2+13,-s.h/2+10); c.lineTo(s.w/2-17,-s.h/2+10); c.stroke();
+        c.restore();
+      }
+
+      function currentQuizKind(){return screen==='networkQuiz'?'network':'single'}
+      function routePosition(kind,seconds){const frames=routeFrames[kind],frame=clamp(seconds,0,ROUTE_DURATION)*ROUTE_FPS,i=Math.min(frames.length-2,Math.floor(frame)),f=frame-i,a=frames[i],b=frames[i+1],turn=a&&b?Math.atan2(Math.sin(b.a-a.a),Math.cos(b.a-a.a)):0;return a&&b?{x:lerp(a.x,b.x,f),y:lerp(a.y,b.y,f),a:a.a+turn*f,state:f<.5?a.state:b.state}:{x:inner.x+inner.w/2,y:inner.y+inner.h/2,a:0,state:'explore'}}
+      function currentMoment(kind){if(!revealed[kind])return Math.min(Math.max(0,(routeWindows[kind]||[]).length-1),points[kind]);const wins=routeWindows[kind]||[];let nearest=0,dist=Infinity;wins.forEach((w,i)=>{const d=replayTime[kind]<w.start?w.start-replayTime[kind]:replayTime[kind]>w.end?replayTime[kind]-w.end:0;if(d<dist){dist=d;nearest=i}});return nearest}
+      function draw() {
+        ctx.clearRect(0,0,W,H);if(staticLayer)ctx.drawImage(staticLayer,0,0);
+        paws.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.globalAlpha=Math.min(.16,p.life*.16);ctx.fillStyle='#5c5140';ctx.beginPath();ctx.ellipse(-4,p.side?4:-4,2.5,1.4,-.2,0,TAU);ctx.ellipse(1,p.side?-4:4,2.5,1.4,.2,0,TAU);ctx.fill();ctx.restore()});
+        motes.forEach(p=>{ctx.globalAlpha=p.life*.25;ctx.fillStyle='#f2e9cc';ctx.beginPath();ctx.arc(p.x,p.y,1.6,0,TAU);ctx.fill()});ctx.globalAlpha=1;
+        const quiz=screen==='singleQuiz'||screen==='networkQuiz', kind=quiz?currentQuizKind():'';
+        const hasGrid=['singleObserve','singleQuiz','networkObserve','networkQuiz'].includes(screen);
+        if(hasGrid){ctx.save();
+          if(screen==='singleObserve'){const r=zoneRect(1);ctx.fillStyle='rgba(142,190,101,.29)';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle='rgba(191,229,148,.88)';ctx.lineWidth=3;ctx.strokeRect(r.x+1,r.y+1,r.w-2,r.h-2)}
+          if(screen==='networkObserve'&&mouse){const r=zoneRect(zone(mouse.x,mouse.y));ctx.fillStyle='rgba(142,190,101,.24)';ctx.fillRect(r.x,r.y,r.w,r.h)}
+          if(quiz){
+            const moment=currentMoment(kind),userZones=chosen[kind][moment];
+            for(const z of userZones){const r=zoneRect(z);ctx.fillStyle=timeColor(moment,.24);ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle=timeColor(moment,.96);ctx.lineWidth=4;ctx.setLineDash([9,6]);ctx.strokeRect(r.x+3,r.y+3,r.w-6,r.h-6);ctx.setLineDash([])}
+            if(revealed[kind]){
+              const upto=replayTime[kind],samples=Math.max(1,Math.ceil(upto*12));ctx.beginPath();for(let n=0;n<=samples;n++){const q=routePosition(kind,upto*n/samples);n?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)}
+              ctx.strokeStyle='rgba(238,211,125,.94)';ctx.lineWidth=4;ctx.setLineDash([7,7]);ctx.stroke();ctx.setLineDash([]);
+            }
+          }
+          ctx.strokeStyle='rgba(45,61,43,.56)';ctx.lineWidth=2;ctx.beginPath();for(let col=1;col<3;col++){const x=inner.x+inner.w*col/3;ctx.moveTo(x,inner.y);ctx.lineTo(x,inner.y+inner.h)}ctx.moveTo(inner.x,inner.y+inner.h/2);ctx.lineTo(inner.x+inner.w,inner.y+inner.h/2);ctx.stroke();ctx.restore();
+        }
+        const glint=ctx.createLinearGradient(0,inner.y,0,inner.y+80);glint.addColorStop(0,'rgba(255,255,255,.055)');glint.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=glint;ctx.fillRect(inner.x+4,inner.y+4,inner.w-8,78);
+        // The mouse is always the final scene layer, above bedding, props, highlights, and grid marks.
+        if(mouse&&(!quiz||revealed[kind]))drawMouse(ctx,mouse,time);
+        drawTrace();
+      }
+
+      function drawMouse(c,m,t) {
+        c.save(); c.translate(m.x,m.y); c.rotate(m.a+Math.PI/2); c.scale(1.2,1.2);
+        const moving=m.state==='explore';
+        const bob=moving?Math.sin(t*14)*.65:Math.sin(t*4)*.22;
+        c.translate(0,bob);
+        c.save(); c.lineCap='round'; c.lineJoin='round';
+        c.strokeStyle='#81766d'; c.lineWidth=3.1; c.beginPath(); c.moveTo(0,20);
+        c.bezierCurveTo(3+Math.sin(m.tailPhase)*4,36,-6+Math.sin(m.tailPhase*.65)*8,51,1+Math.sin(m.tailPhase*.4)*11,65); c.stroke();
+        c.strokeStyle='rgba(224,207,194,.55)'; c.lineWidth=.9; c.beginPath(); c.moveTo(-.5,24); c.bezierCurveTo(1,39,-5,51,1,63); c.stroke(); c.restore();
+        const step=moving?Math.sin(t*14)*2.4:0;
+        [[-8,13,-1],[8,13,1],[-8,-5,1],[8,-5,-1]].forEach(([x,y,side],i)=>{
+          c.save(); c.translate(x,y); c.rotate(side*(.2+(i%2?-.1:.1))+(i<2?step*.025:-step*.025));
+          c.fillStyle=i<2?'#9b7770':'#b58b82'; c.beginPath(); c.ellipse(0,1,3.2,6.2,.18,0,TAU); c.fill();
+          c.strokeStyle='rgba(72,54,50,.42)';c.lineWidth=.55;for(let k=-1;k<=1;k++){c.beginPath();c.moveTo(k*1.35,4);c.lineTo(k*1.6,6.2);c.stroke();}c.restore();
+        });
+        c.fillStyle='rgba(48,42,37,.22)';c.beginPath();c.ellipse(1,1,15.6,24,0,0,TAU);c.fill();
+        const fur=c.createRadialGradient(-5,-8,3,0,0,27);fur.addColorStop(0,'#b6a99d');fur.addColorStop(.48,'#8d8178');fur.addColorStop(.84,'#71665f');fur.addColorStop(1,'#514943');
+        c.fillStyle=fur;c.beginPath();c.ellipse(0,0,14.2,23.3,0,0,TAU);c.fill();
+        c.save();c.beginPath();c.ellipse(0,0,14,23,0,0,TAU);c.clip();
+        for(const mark of furMarks){c.strokeStyle=mark.light?'rgba(223,209,194,.14)':'rgba(43,38,35,.12)';c.lineWidth=.5;c.beginPath();c.moveTo(mark.x,mark.y);c.lineTo(mark.x+mark.dx,mark.y+mark.dy);c.stroke();}c.restore();
+        const dorsal=c.createLinearGradient(-3,-8,4,11);dorsal.addColorStop(0,'rgba(223,213,202,.19)');dorsal.addColorStop(.45,'rgba(255,255,255,.035)');dorsal.addColorStop(1,'rgba(50,43,39,.15)');
+        c.fillStyle=dorsal;c.beginPath();c.ellipse(-1,-.5,7.8,18,0,0,TAU);c.fill();
+        [[-10,-17],[10,-17]].forEach(([x,y],i)=>{c.fillStyle='#776963';c.beginPath();c.ellipse(x,y,7.8,8.2,i?-.25:.25,0,TAU);c.fill();c.fillStyle='#bd8985';c.beginPath();c.ellipse(x,y,5.2,5.7,i?-.25:.25,0,TAU);c.fill();c.fillStyle='rgba(255,218,202,.32)';c.beginPath();c.ellipse(x-1.3,y-2,2.4,2.6,-.4,0,TAU);c.fill();});
+        const head=c.createRadialGradient(-4,-22,1,0,-18,19);head.addColorStop(0,'#c5b5a7');head.addColorStop(.55,'#9c8c81');head.addColorStop(1,'#766a62');
+        c.fillStyle=head;c.beginPath();c.ellipse(0,-17.8,12.3,14.7,0,0,TAU);c.fill();
+        c.fillStyle='#aa9990';c.beginPath();c.moveTo(-7,-24);c.quadraticCurveTo(-6,-30,0,-34);c.quadraticCurveTo(6,-30,7,-24);c.quadraticCurveTo(5,-19,0,-19);c.quadraticCurveTo(-5,-19,-7,-24);c.fill();
+        c.fillStyle='#201d1c';c.beginPath();c.arc(-8,-19.5,2.05,0,TAU);c.arc(8,-19.5,2.05,0,TAU);c.fill();
+        c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.arc(-8.65,-20.1,.63,0,TAU);c.arc(7.35,-20.1,.63,0,TAU);c.fill();
+        c.fillStyle='#bd7f7c';c.beginPath();c.ellipse(0,-33.2,2.7,2.15,0,0,TAU);c.fill();
+        c.strokeStyle='rgba(69,53,50,.55)';c.lineWidth=.65;c.beginPath();c.moveTo(-.3,-31.4);c.quadraticCurveTo(-1.5,-29.8,-3.5,-29.2);c.moveTo(.3,-31.4);c.quadraticCurveTo(1.5,-29.8,3.5,-29.2);c.stroke();
+        c.strokeStyle='rgba(237,229,215,.8)';c.lineWidth=.72;for(let side of [-1,1])for(let k=0;k<3;k++){const yy=-29+k*1.2;c.beginPath();c.moveTo(side*2.5,yy);c.quadraticCurveTo(side*12,yy-2+k*3,side*(21+Math.sin(t*7+k)*.4),-36+k*6.5);c.stroke();}
+        if(m.state==='groom'){c.fillStyle='#a7877d';c.beginPath();c.ellipse(-5,-26+Math.sin(t*9),2.7,4.3,-.4,0,TAU);c.ellipse(5,-26-Math.sin(t*9),2.7,4.3,.4,0,TAU);c.fill();}
+        c.restore();
+      }
+
+      function resetMouse() {
+        rngSeed=seed;
+        mouse={x:500,y:336,a:rand(0,TAU),vx:0,vy:0,state:'explore',stateTime:0,target:null,sniffWiggle:0,tailPhase:0,furPhase:0};
+        elapsed=0; time=0; paws=[]; motes=[]; chooseTarget();
+      }
+
+      function chooseTarget() {
+        let x,y;
+        const r=random();
+        if (r<.34) { // perimeter exploration; mice tend to stay close to edges
+          const side=Math.floor(random()*4), inset=rand(78,155);
+          if(side===0){x=rand(inner.x+70,inner.x+inner.w-70);y=inner.y+inset*.25;}
+          else if(side===1){x=inner.x+inner.w-inset*.25;y=rand(inner.y+65,inner.y+inner.h-65);}
+          else if(side===2){x=rand(inner.x+70,inner.x+inner.w-70);y=inner.y+inner.h-inset*.25;}
+          else{x=inner.x+inset*.25;y=rand(inner.y+65,inner.y+inner.h-65);}
+        } else if (r<.58) { // pause at food
+          const s=seeds[Math.floor(random()*seeds.length)]; x=s.x+rand(-15,15); y=s.y+rand(-15,15);
+        } else if (r<.76) { // inspect a shelter
+          const s=shelters[Math.floor(random()*shelters.length)]; x=s.x+rand(-s.w*.42,s.w*.42); y=s.y+rand(-s.h*.48,s.h*.48);
+        } else if (r<.86) { x=dish.x+rand(-55,55); y=dish.y+rand(-50,50); }
+        else { x=rand(inner.x+90,inner.x+inner.w-90); y=rand(inner.y+85,inner.y+inner.h-85); }
+        x=clamp(x,inner.x+35,inner.x+inner.w-35); y=clamp(y,inner.y+35,inner.y+inner.h-35);
+        mouse.target={x,y};
+      }
+
+      function update(dt){
+        time+=dt;const m=mouse,quiz=screen==='singleQuiz'||screen==='networkQuiz',kind=quiz?currentQuizKind():null;
+        if(quiz&&revealed[kind]){
+          if(replayPlaying[kind]){replayTime[kind]=Math.min(ROUTE_DURATION,replayTime[kind]+dt);if(replayTime[kind]>=ROUTE_DURATION){replayPlaying[kind]=false;if(!replayCompleted[kind]){replayCompleted[kind]=true;render();resize()}}
+            const oldX=m.x,oldY=m.y,p=routePosition(kind,replayTime[kind]);
+            m.x=p.x;m.y=p.y;m.vx=(m.x-oldX)/Math.max(dt,.001);m.vy=(m.y-oldY)/Math.max(dt,.001);m.a=p.a;m.state=p.state;m.tailPhase+=dt*6;
+          }else{const p=routePosition(kind,ROUTE_DURATION);m.x=p.x;m.y=p.y;m.vx=0;m.vy=0;m.state='sniff'}
+        }else{
+          m.stateTime+=dt;m.tailPhase+=dt*6;
+          if(m.state==='sniff'||m.state==='groom'){
+            m.vx*=Math.pow(.02,dt);m.vy*=Math.pow(.02,dt);
+            if(m.state==='sniff'&&random()<dt*.55)motes.push({x:m.x+Math.cos(m.a)*13,y:m.y+Math.sin(m.a)*13,life:1,angle:m.a+rand(-.55,.55)});
+            if(m.stateTime>m.pauseDuration){if(m.state==='groom'&&random()<.38){m.state='sniff';m.stateTime=0;m.pauseDuration=rand(1.1,2.4)}else{m.state='explore';m.stateTime=0;chooseTarget()}}
+          }else{
+            if(!m.target)chooseTarget();const dx=m.target.x-m.x,dy=m.target.y-m.y,dist=Math.hypot(dx,dy)||1,desired=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(desired-m.a),Math.cos(desired-m.a));
+            m.a+=clamp(diff,-dt*(1.35+Math.min(1,Math.abs(diff))*.5),dt*(1.35+Math.min(1,Math.abs(diff))*.5));let desiredSpeed=rand(54,64)*speed;if(dist<48)desiredSpeed*=.58;
+            const margin=74,pushX=(m.x<inner.x+margin?1:0)-(m.x>inner.x+inner.w-margin?1:0),pushY=(m.y<inner.y+margin?1:0)-(m.y>inner.y+inner.h-margin?1:0);if((pushX||pushY)&&random()<.5)m.a+=Math.atan2(pushY,pushX)*dt*.7;
+            const tx=Math.cos(m.a)*desiredSpeed,ty=Math.sin(m.a)*desiredSpeed,blend=1-Math.exp(-dt*2.4),oldX=m.x,oldY=m.y;m.vx=lerp(m.vx,tx,blend);m.vy=lerp(m.vy,ty,blend);m.x+=m.vx*dt;m.y+=m.vy*dt;
+            m.x=clamp(m.x,inner.x+30,inner.x+inner.w-30);m.y=clamp(m.y,inner.y+30,inner.y+inner.h-30);
+            if(Math.hypot(m.x-oldX,m.y-oldY)>1.2&&random()<dt*7)paws.push({x:m.x,y:m.y,a:m.a,life:1,side:random()});
+            if(dist<17||m.stateTime>12){m.vx=0;m.vy=0;m.stateTime=0;const groom=random()<.13;m.state=groom?'groom':'sniff';m.pauseDuration=groom?rand(1.5,3.1):rand(.9,2.6)}
+          }
+          paws.forEach(p=>p.life-=dt*.075);paws=paws.filter(p=>p.life>0);motes.forEach(p=>{p.life-=dt*.8;p.x+=Math.cos(p.angle)*dt*4;p.y+=Math.sin(p.angle)*dt*4});motes=motes.filter(p=>p.life>0);
+        }
+        if(screen==='singleObserve'||screen==='networkObserve')recordActivity(dt);
+      }
+      function drawTrace(){
+        if(!traceCtx)return;const c=traceCtx;c.clearRect(0,0,1120,132);c.fillStyle='#19251f';c.fillRect(0,0,1120,132);
+        c.strokeStyle='rgba(200,220,196,.1)';c.lineWidth=1;for(let y=20;y<132;y+=28){c.beginPath();c.moveTo(0,y);c.lineTo(1120,y);c.stroke()}
+        const quiz=screen==='singleQuiz'||screen==='networkQuiz',kind=screen.includes('network')?'network':'single',channels=kind==='single'?1:6;
+        if(!quiz){
+          for(let ch=0;ch<channels;ch++){const yBase=channels===1?94:18+ch*19;c.strokeStyle=neuronColors[channels===1?1:ch];c.lineWidth=channels===1?2:1.5;c.beginPath();c.moveTo(0,yBase);c.lineTo(1120,yBase);c.stroke();
+            for(const event of activityHistory[ch])if(event.spike){const x=Math.max(0,Math.min(1118,(event.t-(activityTime-5))/5*1120));c.strokeStyle=neuronColors[channels===1?1:ch];c.lineWidth=1.7;c.beginPath();c.moveTo(x,yBase+5);c.lineTo(x,yBase-13);c.stroke()}
+          }return;
+        }
+        const left=72,width=976,activePart=currentMoment(kind),pulse=.48+.28*(Math.sin(time*4)+1)/2;
+        for(let j=0;j<routeWindows[kind].length;j++){
+          const w=routeWindows[kind][j];if(!w)continue;const x=left+w.start/ROUTE_DURATION*width,ww=(w.end-w.start)/ROUTE_DURATION*width;
+          c.fillStyle=timeColor(j,j===activePart?.36:.18);c.fillRect(x,5,ww,122);c.strokeStyle=timeColor(j,.62);c.lineWidth=1.5;c.strokeRect(x+.75,5.75,Math.max(1,ww-1.5),120.5);
+          if(ww>=25){c.fillStyle='#f0f3eb';c.font='bold 11px Arial';c.textAlign='center';c.fillText(String(j+1),x+ww/2,17)}
+          if(j===activePart&&!revealed[kind]){c.save();c.shadowColor=timeColor(j);c.shadowBlur=7+8*pulse;c.strokeStyle=timeColor(j,.95);c.globalAlpha=pulse;c.lineWidth=3;c.strokeRect(x+1,7,Math.max(1,ww-2),118);c.restore()}
+        }
+        for(let ch=0;ch<channels;ch++){const yBase=channels===1?94:17+ch*19;c.strokeStyle=neuronColors[channels===1?1:ch];c.lineWidth=channels===1?2:1.5;c.beginPath();c.moveTo(0,yBase);c.lineTo(1120,yBase);c.stroke();
+          for(const t of routeSpikes[kind][ch]||[]){const x=left+clamp(t/ROUTE_DURATION,0,1)*width;c.strokeStyle=neuronColors[channels===1?1:ch];c.lineWidth=1.7;c.beginPath();c.moveTo(x,yBase+5);c.lineTo(x,yBase-12);c.stroke()}
+        }
+        if(revealed[kind]){const x=left+clamp(replayTime[kind]/ROUTE_DURATION,0,1)*width;c.strokeStyle='rgba(242,231,164,.96)';c.lineWidth=3;c.beginPath();c.moveTo(x,3);c.lineTo(x,129);c.stroke()}
+      }
+      function recordActivity(dt){activityAccumulator+=dt;while(activityAccumulator>=.08){activityAccumulator-=.08;activityTime+=.08;const activeZone=zone(mouse.x,mouse.y);for(let ch=0;ch<6;ch++){const field=screen==='networkObserve'?activeZone===ch:ch===0&&activeZone===1;activityHistory[ch].push({t:activityTime,spike:random()<(field?.96:.025)})}for(const row of activityHistory)while(row.length&&row[0].t<activityTime-5)row.shift()}}
+      function updateNeuronCards(){if(screen!=='networkObserve')return;panel.querySelectorAll('.network-neuron').forEach(el=>el.classList.remove('active'))}
+      function syncQuizMarks(){const k=currentQuizKind(),count=chosen[k].filter(x=>x.size).length,check=panel.querySelector('[data-action="reveal"]');if(check)check.disabled=count<chosen[k].length||points[k]<chosen[k].length||revealed[k];draw()}
+      function syncMappingUI(){if(screen!=='networkObserve')return;const right=networkMapping.filter((z,i)=>z===String(i)).length,status=panel.querySelector('[data-map-status]'),button=panel.querySelector('[data-action="quiz2"]'),complete=right===6;if(status){status.textContent=`${right} מתוך 6 שויכו נכון`;status.classList.toggle('complete',complete)}if(button)button.disabled=!complete;panel.querySelectorAll('[data-map-trigger]').forEach(el=>{const i=Number(el.dataset.mapTrigger);el.innerHTML=mapPreviewMarkup(i);el.setAttribute('aria-label',networkMapping[i]===''?'בחרו משבצת לתא המיקום':`משבצת ${Number(networkMapping[i])+1} נבחרה לתא המיקום`)});panel.querySelectorAll('[data-map-select]').forEach(el=>{const i=Number(el.dataset.mapSelect),z=Number(el.dataset.zone),used=networkMapping.some((value,other)=>other!==i&&value===String(z));el.disabled=used;el.classList.toggle('selected',networkMapping[i]===String(z))});panel.querySelectorAll('[data-map-clear]').forEach(el=>{el.hidden=networkMapping[Number(el.dataset.mapClear)]==='' });panel.querySelectorAll('[data-map-picker]').forEach(el=>{const i=Number(el.dataset.mapPicker);el.hidden=mappingOpen!==i;el.closest('.network-neuron')?.classList.toggle('map-open',mappingOpen===i)})}
+      function zoneAtPointer(e){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.width*W;if(x<inner.x||x>inner.x+inner.w||y<inner.y||y>inner.y+inner.h)return -1;return zone(x,y)}
+      function markZone(z,mode){if(z<0||paintedZones.has(z))return;const k=currentQuizKind(),idx=points[k];if(idx>=chosen[k].length)return;paintedZones.add(z);const set=chosen[k][idx];if(mode==='toggle')set.has(z)?set.delete(z):set.add(z);else if(mode==='remove')set.delete(z);else set.add(z);syncQuizMarks()}
+      function finishZoneSelection(){if(!painting)return;painting=false;paintedZones=new Set();const k=currentQuizKind(),idx=points[k];if(idx<chosen[k].length&&chosen[k][idx]?.size){points[k]=idx+1;syncQuizMarks()}}
+      canvas.addEventListener('pointerdown',e=>{if(!['singleQuiz','networkQuiz'].includes(screen)||revealed[currentQuizKind()])return;const z=zoneAtPointer(e);if(z<0)return;e.preventDefault();painting=true;paintedZones=new Set();canvas.setPointerCapture(e.pointerId);markZone(z,e.shiftKey?'remove':'toggle')});
+      canvas.addEventListener('pointermove',e=>{if(!painting)return;const z=zoneAtPointer(e);markZone(z,e.shiftKey?'remove':'add')});
+      canvas.addEventListener('pointerup',finishZoneSelection);canvas.addEventListener('pointercancel',()=>{painting=false;paintedZones=new Set()});
+      panel.addEventListener('click',e=>{if(e.target!==panel.querySelector('#trace')||!['singleQuiz','networkQuiz'].includes(screen)||revealed[currentQuizKind()])return;const k=currentQuizKind(),idx=points[k],selected=chosen[k][idx],r=e.target.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*1120,left=72,width=976,t=(x-left)/width*ROUTE_DURATION,clicked=(routeWindows[k]||[]).findIndex(w=>t>=w.start&&t<=w.end);if(clicked<0)return;if(clicked<idx){points[k]=clicked;syncQuizMarks();return}if(clicked===idx&&idx<routeWindows[k].length&&selected?.size){points[k]=idx+1;syncQuizMarks()}});
+      panel.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.action,k=currentQuizKind();
+        if(b.hasAttribute('data-map-trigger')){const i=Number(b.dataset.mapTrigger);mappingOpen=mappingOpen===i?-1:i;syncMappingUI();return}
+        if(b.hasAttribute('data-map-select')){const i=Number(b.dataset.mapSelect),z=Number(b.dataset.zone);if(networkMapping[i]===String(z)){networkMapping[i]='';mappingOpen=-1;syncMappingUI();return}if(networkMapping.some((value,other)=>other!==i&&value===String(z)))return;networkMapping[i]=String(z);mappingOpen=-1;syncMappingUI();return}if(b.hasAttribute('data-map-clear')){networkMapping[Number(b.dataset.mapClear)]='';mappingOpen=-1;syncMappingUI();return}
+        if(a==='start')setScreen('singleObserve');else if(a==='quiz1')setScreen('singleQuiz');else if(a==='quiz2')setScreen('networkQuiz');
+        else if(a==='reveal'&&chosen[k].length>0&&chosen[k].every(x=>x.size)&&points[k]>=chosen[k].length){revealed[k]=true;replayCompleted[k]=false;replayTime[k]=0;replayPlaying[k]=true;const p=routePosition(k,0);mouse.x=p.x;mouse.y=p.y;mouse.target=null;render();resize()}
+        else if(a==='replay'){replayCompleted[k]=false;replayTime[k]=0;replayPlaying[k]=true;const p=routePosition(k,0);mouse.x=p.x;mouse.y=p.y;mouse.target=null;render();resize()}
+        else if(a==='network'&&reflection.single.every(x=>x.trim()))setScreen('networkObserve')
+        else if(a==='finish'&&reflection.network.every(x=>x.trim())){downloadAnswersReport();panel.innerHTML=`<div class="story-card"><h3>כל הכבוד, השלמתם את הפעילות!</h3><p>תא בודד מאותת על מקום מסוים כשהעכבר נמצא בו. רשת תאים משלימה יחד קוד מרחבי שמאפשר להעריך את מיקומו בכל רחבי הקופסה.</p><button class="primary" data-action="restart">התחילו מחדש</button></div>`}
+        else if(a==='restart'){points={single:0,network:0};chosen={single:[],network:[]};revealed={single:false,network:false};replayCompleted={single:false,network:false};reflection={single:['',''],network:['','']};replayTime={single:0,network:0};replayPlaying={single:false,network:false};networkMapping=Array(6).fill('');setScreen('intro')}
+      });
+      panel.addEventListener('input',e=>{if(!e.target.matches('[data-ref]'))return;const k=screen==='singleQuiz'?'single':'network';reflection[k][+e.target.dataset.ref]=e.target.value;const btn=panel.querySelector('[data-action="network"],[data-action="finish"]');if(btn)btn.disabled=!reflection[k].every(x=>x.trim())});
+      function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);updateNeuronCards();draw();requestAnimationFrame(frame)}
+      window.addEventListener('resize',resize);render();resize();resetMouse();requestAnimationFrame(frame);
+    })();
+  </script>
+  <script>
+    (() => {
+      let sent = false;
+      const send = () => {
+        if (sent) return;
+        sent = true;
+        window.parent.postMessage({ source: "neural-code-riddle", type: "submitted", puzzleId: "mouse-place-cells" }, "*");
+      };
+      document.addEventListener("click", (event) => {
+        if (event.target.closest('[data-action="finish"]')) window.setTimeout(send, 350);
+      });
+    })();
+  </script>
+
+<script data-standalone-responsive>
+(() => {
+  "use strict";
+
+  const filename = "mouse-place-cells";
+  const riddle = filename.startsWith("dendritic-riddle-") ? filename : filename;
+  document.body.dataset.riddle = riddle;
+
+  const reportFilenames = {
+    "dendritic-riddle-1": "קומה 1 - חידה 1 - איתן ועמית.doc",
+    "dendritic-riddle-2": "קומה 1 - חידה 2 - הכדורסלן.doc",
+    "dendritic-riddle-3": "קומה 1 - חידה 3 - השירים האהובים.doc",
+    "dendritic-riddle-4": "קומה 1 - חידה 4 - הקוף בג׳ונגל.doc",
+    "skin-temperature": "קומה 2 - חידה 1 - פענוח טמפרטורת העור.docx",
+    "movement-direction": "קומה 2 - חידה 2 - פענוח כיוון התנועה.docx",
+    "hippocampal-object-neuron": "קומה 2 - חידה 3 - נוירון אובייקטים בהיפוקמפוס.docx",
+    "language-neuron": "קומה 2 - חידה 4 - פענוח פעילות נוירון השפה.docx",
+    "mouse-place-cells": "קומה 3 - חידה 1 - תאי מיקום.doc",
+    "wormmind": "קומה 3 - חידה 2 - מוח, חיווט והתנהגות.doc"
+  };
+
+  const reportFilename = reportFilenames[riddle];
+  if (reportFilename) {
+    const nameReport = (anchor) => {
+      if (anchor?.download) anchor.download = reportFilename;
+    };
+    const nativeAnchorClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function namedReportClick() {
+      nameReport(this);
+      return nativeAnchorClick.call(this);
+    };
+    document.addEventListener("click", (event) => nameReport(event.target.closest?.("a[download]")), true);
+  }
+
+  const wrapStageVisual = (stage, ringSelector, className) => {
+    if (!stage || stage.querySelector(`:scope > .${className}`)) return;
+    const ring = stage.querySelector(`:scope > ${ringSelector}`);
+    if (!ring) return;
+    const visual = document.createElement("div");
+    visual.className = className;
+    [...stage.children].filter((child) => child !== ring).forEach((child) => visual.appendChild(child));
+    stage.insertBefore(visual, ring);
+  };
+
+  if (riddle === "movement-direction") {
+    [document.getElementById("boardStage"), document.querySelector(".result-stage")].forEach((stage) => {
+      wrapStageVisual(stage, ".plot-ring", "responsive-direction-visual");
+      stage?.classList.add("responsive-direction-stage");
+    });
+  }
+
+  if (riddle === "skin-temperature") {
+    const prepareGauge = (stage, gaugeSelector, ringSelector) => {
+      if (!stage || stage.querySelector(":scope > .responsive-gauge-visual")) return;
+      const gauge = stage.querySelector(`:scope > ${gaugeSelector}`);
+      const ring = stage.querySelector(`:scope > ${ringSelector}`);
+      if (!gauge || !ring) return;
+      const visual = document.createElement("div");
+      visual.className = "responsive-gauge-visual";
+      visual.appendChild(gauge);
+      stage.insertBefore(visual, ring.nextSibling);
+      stage.classList.add("responsive-gauge-stage");
+    };
+
+    prepareGauge(document.getElementById("gaugeStage"), "#temperatureGauge", ".plot-orbit");
+    prepareGauge(document.querySelector(".result-gauge-stage"), "#resultTemperatureGauge", ".result-orbit");
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,4216 @@
+/* Shared responsive layer for every embedded riddle. Loaded after each riddle's
+   original styles so the activities keep their visual identity without being
+   scaled down to fit a short iframe. */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+body {
+  zoom: 1 !important;
+}
+
+body[data-riddle] {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  zoom: 1 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body[data-riddle] img,
+body[data-riddle] svg,
+body[data-riddle] canvas {
+  max-width: 100%;
+}
+
+body[data-riddle] button,
+body[data-riddle] input,
+body[data-riddle] textarea,
+body[data-riddle] select {
+  max-width: 100%;
+}
+
+/* Screen changes move focus to the new heading for assistive technology.
+   Browsers otherwise draw a heavy rectangular ring around these non-control
+   headings, which reads as an accidental overlap in the activity artwork. */
+body[data-riddle] :is(h1, h2, h3)[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Floor 1 — dendritic workflow */
+body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+  height: 100dvh;
+  padding: 14px;
+  align-items: stretch;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+  width: min(1540px, 100%);
+  height: calc(100dvh - 28px);
+  max-height: none;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 78px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) > .step-actions {
+  position: sticky !important;
+  z-index: 14;
+  bottom: 0 !important;
+  padding: 10px 8px 6px;
+  border-top: 1px solid rgba(203, 213, 225, .72);
+  background: linear-gradient(180deg, rgba(248, 251, 255, .12), #f8fbff 28%);
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node {
+  min-height: 42px;
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .box-title,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .main {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .sub,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .prepared-hint,
+body[data-riddle^="dendritic-riddle"] .placed-row,
+body[data-riddle^="dendritic-riddle"] .placed-details summary,
+body[data-riddle^="dendritic-riddle"] .placed-list > b {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle^="dendritic-riddle"] .board-wrap {
+  height: clamp(330px, 48dvh, 540px) !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 900px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+    padding: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1 .builder,
+  body[data-riddle^="dendritic-riddle"] #flowStep2 .builder {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+    padding-inline: 13px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-node {
+    padding-inline: 4px !important;
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: clamp(310px, 58dvh, 440px) !important;
+  }
+}
+
+/* Floor 2 — temperature */
+/* Floor 1 viewport-fit overrides: fill the iframe first and keep a single
+   scroll surface only when the content truly cannot fit. */
+body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+  padding: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+  width: min(1600px, 100%);
+  height: 100dvh;
+  border-radius: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar {
+  padding: 8px clamp(14px, 2vw, 30px) 7px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar > div {
+  margin-bottom: 6px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar strong {
+  font-size: 18px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-topbar #flowPuzzleTitle {
+  font-size: 14px;
+}
+
+body[data-riddle^="dendritic-riddle"] .stepper {
+  gap: 6px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node {
+  min-height: 34px;
+  padding: 4px 8px;
+  font-size: 12px !important;
+  line-height: 1.2;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node b {
+  flex-basis: 23px;
+  height: 23px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+  padding: 8px clamp(12px, 2vw, 28px) 10px;
+  gap: 7px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scroll-padding-bottom: 12px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) > .step-actions {
+  position: static !important;
+  z-index: auto;
+  bottom: auto !important;
+  min-height: 38px;
+  padding: 0;
+  border-top: 0;
+  background: none;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-actions .finish-btn,
+body[data-riddle^="dendritic-riddle"] .step-actions .secondary-btn {
+  min-width: 170px;
+  padding: 9px 14px;
+  font-size: 14px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 1px;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-kicker {
+  grid-row: 1 / 3;
+  margin: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro h2 {
+  margin: 0;
+  font-size: clamp(21px, 3vh, 28px);
+  line-height: 1.12;
+}
+
+body[data-riddle^="dendritic-riddle"] .step-intro p {
+  max-width: none;
+  font-size: clamp(13px, 1.7vh, 15px);
+  line-height: 1.3;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .box-title,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .main {
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .sub,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .prepared-hint,
+body[data-riddle^="dendritic-riddle"] .placed-row,
+body[data-riddle^="dendritic-riddle"] .placed-details summary,
+body[data-riddle^="dendritic-riddle"] .placed-list > b {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-riddle^="dendritic-riddle"] #buildPuzzleReminder p,
+body[data-riddle^="dendritic-riddle"] #casePuzzleReminder p {
+  white-space: normal;
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0:not([hidden]) {
+  display: grid;
+  grid-template-rows: auto minmax(min-content, 1fr);
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-main,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .story-visual,
+body[data-riddle^="dendritic-riddle"] #flowStep0 .visual-frame {
+  min-height: 0;
+}
+
+body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+  height: 100%;
+}
+
+@media (min-width: 701px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    grid-template-rows: auto minmax(min-content, 1fr) auto !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildControls,
+  body[data-riddle^="dendritic-riddle"] #caseControls {
+    min-height: min-content !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost {
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleVisualHost,
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual {
+    height: 100%;
+    min-height: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 540px;
+  }
+}
+
+@media (min-width: 1200px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1 #inputMenu .option-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the two-column composition through small landscape/tablet widths. The
+   source stylesheet otherwise creates an implicit second column and squeezes
+   the controls to roughly 70px between 701px and 850px. */
+@media (min-width: 701px) and (max-width: 900px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(270px, .9fr) minmax(330px, 1.1fr) !important;
+    grid-template-rows: auto minmax(min-content, 1fr) auto !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-topbar {
+    padding: 8px 10px 7px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-topbar > div {
+    margin-bottom: 6px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .stepper {
+    gap: 3px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-node {
+    min-height: 43px;
+    padding: 3px 2px !important;
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+    padding: 10px 12px 14px !important;
+    gap: 10px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro {
+    display: block;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-kicker {
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro h2 {
+    font-size: 22px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-intro p {
+    font-size: 14px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildControls,
+  body[data-riddle^="dendritic-riddle"] #caseControls,
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleLeft,
+  body[data-riddle^="dendritic-riddle"] .rationale-card {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep1 .builder {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual {
+    height: auto;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: clamp(260px, 42dvh, 360px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 300px;
+  }
+}
+
+/* Requested layout corrections — preserve the compact shell while restoring
+   the scientific diagrams to their meaningful spatial arrangement. */
+body[data-riddle^="dendritic-riddle"] #flowStep1 #inputMenu .option-list {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+@media (min-width: 651px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: clamp(350px, 46dvh, 485px) !important;
+    min-height: 350px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    position: absolute !important;
+    inset: auto auto -4px 50% !important;
+    width: min(62%, 620px) !important;
+    height: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .condition {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(84px, 16%, 116px) !important;
+    height: 49px !important;
+    min-height: 0 !important;
+    padding: 4px 5px !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-0 { left: 0 !important; top: 68% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-1 { left: 14% !important; top: 39% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-2 { left: 31% !important; top: 2% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-3 { left: 53% !important; top: 2% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-4 { left: 70% !important; top: 39% !important; }
+  body[data-riddle="skin-temperature"] #record #conditionPlots .orbit-5 { left: auto !important; right: 0 !important; top: 68% !important; }
+
+  body[data-riddle="movement-direction"] #record .board-stage.responsive-direction-stage {
+    position: relative !important;
+    display: block !important;
+    width: min(100%, 620px) !important;
+    max-width: 620px !important;
+    aspect-ratio: 1 !important;
+    margin: 4px auto 14px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-stage > .plot-ring {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-stage .mini-raster {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(82px, 17%, 108px) !important;
+    height: 58px !important;
+    min-height: 0 !important;
+    padding: 5px 7px !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .plot-0 { left: 50% !important; top: 5% !important; }
+  body[data-riddle="movement-direction"] #record .plot-1 { left: 82% !important; top: 18% !important; }
+  body[data-riddle="movement-direction"] #record .plot-2 { left: 91% !important; top: 50% !important; }
+  body[data-riddle="movement-direction"] #record .plot-3 { left: 82% !important; top: 82% !important; }
+  body[data-riddle="movement-direction"] #record .plot-4 { left: 50% !important; top: 95% !important; }
+  body[data-riddle="movement-direction"] #record .plot-5 { left: 18% !important; top: 82% !important; }
+  body[data-riddle="movement-direction"] #record .plot-6 { left: 9% !important; top: 50% !important; }
+  body[data-riddle="movement-direction"] #record .plot-7 { left: 18% !important; top: 18% !important; }
+}
+
+@media (min-width: 821px) {
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    display: block !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control,
+  body[data-riddle="skin-temperature"] #record .live-card,
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    grid-area: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    width: 100% !important;
+    height: clamp(145px, 20dvh, 185px) !important;
+    min-height: 145px !important;
+    aspect-ratio: auto !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "head"
+      "instructions"
+      "scene"
+      "gallery-head"
+      "gallery"
+      "gallery-hint"
+      "analysis" !important;
+    align-items: start !important;
+    gap: 8px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head { grid-area: head !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions { grid-area: instructions !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    grid-area: scene !important;
+    width: 100% !important;
+    height: clamp(260px, 42dvh, 420px) !important;
+    min-height: 260px !important;
+    margin: 0 !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head {
+    grid-area: gallery-head !important;
+    margin: 4px 2px 0 !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head .subtle { display: inline !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    grid-area: gallery !important;
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 11px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint { grid-area: gallery-hint !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #experimentAnalysis { grid-area: analysis !important; }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-window {
+    padding: 5px 4px 14px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex: 0 0 150px !important;
+    padding: 7px !important;
+  }
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img { height: 92px !important; }
+}
+
+body[data-riddle="skin-temperature"] .shell {
+  max-width: 1700px;
+}
+
+body[data-riddle="skin-temperature"] .gauge-stage {
+  min-height: 420px;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .fan-tool span,
+body[data-riddle="skin-temperature"] .footer-note,
+body[data-riddle="skin-temperature"] .reset-note {
+  font-size: 12px !important;
+}
+
+@media (max-width: 1180px) {
+  body[data-riddle="skin-temperature"] .lab-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-side {
+    order: -1;
+  }
+}
+
+@media (max-width: 1050px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr);
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 18px;
+    overflow: visible;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 700 / 390;
+    min-width: 0;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > .temperature-gauge,
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > #resultTemperatureGauge {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2;
+    grid-row: 1;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit .condition,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 12px;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual,
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-column: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-row: 2;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control .cool-note {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}
+
+/* On landscape/tablet screens, use the available width before adding height. */
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] .shell {
+    padding-block: 12px 18px;
+  }
+
+  body[data-riddle="skin-temperature"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(260px, .45fr) !important;
+    align-items: start;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-side {
+    order: initial;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.42fr) minmax(250px, .58fr);
+    grid-template-areas:
+      "gauge cooling"
+      "gauge live"
+      "gauge skin";
+    grid-template-rows: auto auto 1fr;
+    align-items: stretch;
+    gap: 7px 12px;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-area: gauge;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(210px, .75fr);
+    align-items: center;
+    gap: 10px;
+    height: min(54dvh, 420px) !important;
+    min-height: 330px !important;
+    padding: 8px;
+    overflow: visible;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 700 / 390;
+    min-width: 0;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > .temperature-gauge {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2;
+    grid-row: 1;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 7px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 62px;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control {
+    grid-area: cooling;
+  }
+
+  body[data-riddle="skin-temperature"] #record .live-card {
+    grid-area: live;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    grid-area: skin;
+    min-height: 118px;
+    height: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 8px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode.screen.active {
+    display: grid !important;
+    grid-template-columns: minmax(300px, .7fr) minmax(0, 1.3fr);
+    grid-template-areas:
+      "title title"
+      "lead lead"
+      "challenge result"
+      "answer result";
+    align-items: start;
+    gap: 9px 15px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .screen-intro {
+    grid-area: title;
+    margin: 0;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .lede {
+    grid-area: lead;
+    margin: 0 0 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .decode-grid {
+    display: contents;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .challenge {
+    grid-area: challenge;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-orbit-card {
+    grid-area: result;
+  }
+
+  body[data-riddle="skin-temperature"] #decode > .answer-card {
+    grid-area: answer;
+    margin: 0;
+  }
+}
+
+@media (min-width: 821px) and (max-width: 1180px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual,
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-column: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-row: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Floor 2 — movement direction */
+body[data-riddle="movement-direction"] .shell {
+  max-width: 1700px;
+}
+
+body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+  align-items: center;
+  gap: 22px;
+  width: 100% !important;
+  max-width: none !important;
+  aspect-ratio: auto !important;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-visual {
+  position: relative;
+  width: min(100%, 700px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+  position: static !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 10px;
+  width: 100%;
+  pointer-events: auto !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-raster {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 72px;
+  padding: 9px 10px;
+  transform: none !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title small,
+body[data-riddle="movement-direction"] .board-label,
+body[data-riddle="movement-direction"] .source,
+body[data-riddle="movement-direction"] .subtle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row {
+  height: 13px;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row i {
+  height: 10px;
+}
+
+body[data-riddle="movement-direction"] .target-index {
+  font-size: 11px !important;
+}
+
+body[data-riddle="movement-direction"] .target-angle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+  width: 100%;
+  max-width: none !important;
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .experiment-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .experiment-instructions {
+    order: -1;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .decode-layout,
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-areas: "evidence" "answer" !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+    width: 100%;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+  body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-visual {
+    width: 100%;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="movement-direction"] .shell {
+    padding-block: 12px 18px;
+  }
+
+  body[data-riddle="movement-direction"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 315px), 500px);
+    min-width: 340px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-layout {
+    grid-template-columns: minmax(0, 1.42fr) minmax(260px, .58fr);
+    gap: 16px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions {
+    padding: 14px 16px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-top {
+    grid-template-columns: minmax(290px, .66fr) minmax(0, 1.34fr) !important;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "challenge results"
+      "answer results" !important;
+    gap: 10px 16px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-evidence {
+    display: contents;
+  }
+
+  body[data-riddle="movement-direction"] #decode .challenge-card {
+    grid-area: challenge;
+  }
+
+  body[data-riddle="movement-direction"] #decode .results-card {
+    grid-area: results;
+  }
+
+  body[data-riddle="movement-direction"] #decode .answer-card {
+    grid-area: answer;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 350px), 440px);
+    min-width: 320px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .results-card,
+  body[data-riddle="movement-direction"] #decode .answer-card,
+  body[data-riddle="movement-direction"] #decode .challenge-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .decode-top {
+    margin-block: 10px 6px;
+  }
+}
+
+/* Floor 2 — hippocampal object neuron */
+body[data-riddle="hippocampal-object-neuron"] .shell {
+  max-width: 1680px;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .intro-grid {
+  min-height: 0 !important;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .photo-card img {
+  height: clamp(300px, 45dvh, 520px) !important;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="hippocampal-object-neuron"] .intro-grid,
+  body[data-riddle="hippocampal-object-neuron"] .lab-scene,
+  body[data-riddle="hippocampal-object-neuron"] .decode-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-block: 10px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] .top {
+    margin-bottom: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-grid {
+    min-height: calc(100dvh - 120px) !important;
+    gap: clamp(28px, 4vw, 64px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro h1 {
+    font-size: clamp(40px, 3.7vw, 54px);
+    margin-bottom: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .lede {
+    line-height: 1.55;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .photo-card img {
+    height: min(64dvh, 520px) !important;
+    object-fit: cover;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(350px, .55fr) minmax(0, 1.45fr);
+    grid-template-areas:
+      "head head"
+      "instructions scene"
+      "gallery-head scene"
+      "gallery scene"
+      "gallery-hint scene"
+      "analysis analysis";
+    align-items: start;
+    gap: 8px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #backBrain {
+    position: absolute;
+    z-index: 4;
+    inset: 0 0 auto auto;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    grid-area: head;
+    margin: 0;
+    padding-inline-end: 106px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions {
+    grid-area: instructions;
+    align-self: stretch;
+    margin: 0;
+    padding: 14px 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    grid-area: scene;
+    grid-template-columns: minmax(0, 1.3fr) minmax(250px, .7fr) !important;
+    align-self: stretch;
+    gap: 12px;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene {
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto !important;
+    align-self: stretch;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    min-height: 0 !important;
+    padding: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head {
+    grid-area: gallery-head;
+    display: flex;
+    margin: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .card-head .subtle {
+    display: none;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    grid-area: gallery;
+    align-self: stretch;
+    margin: 0;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex-basis: 104px;
+    padding: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img {
+    height: 60px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    grid-area: gallery-hint;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > #experimentAnalysis {
+    grid-area: analysis;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul,
+  body[data-riddle="hippocampal-object-neuron"] .category-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Floor 2 — language neuron */
+body[data-riddle="language-neuron"] .app-shell {
+  max-width: 1480px;
+}
+
+body[data-riddle="language-neuron"] .hero-grid,
+body[data-riddle="language-neuron"] #screen-intro .hero-grid {
+  min-height: 0 !important;
+  transform: none !important;
+}
+
+body[data-riddle="language-neuron"] .illustration-tag,
+body[data-riddle="language-neuron"] .truth-chip,
+body[data-riddle="language-neuron"] .review-status,
+body[data-riddle="language-neuron"] .choice-button small,
+body[data-riddle="language-neuron"] .keyboard-hint,
+body[data-riddle="language-neuron"] .dataset-kicker,
+body[data-riddle="language-neuron"] .dataset-breakdown span,
+body[data-riddle="language-neuron"] .pipeline-label,
+body[data-riddle="language-neuron"] .pipeline-set > span:last-child,
+body[data-riddle="language-neuron"] .individual-test-card span,
+body[data-riddle="language-neuron"] .individual-test-card strong {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-riddle="language-neuron"] .sort-bin,
+body[data-riddle="language-neuron"] .current-trial {
+  min-height: clamp(250px, 38dvh, 390px) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordions {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordion[open] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-areas:
+      "current current"
+      "nonword word" !important;
+  }
+
+  body[data-riddle="language-neuron"] .training-stage,
+  body[data-riddle="language-neuron"] .fake-test-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="language-neuron"] .learning-accordions,
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-areas: "current" "word" "nonword" !important;
+  }
+}
+
+/* Floor 3 — place cells */
+body[data-riddle="mouse-place-cells"] .app {
+  width: min(1600px, 100%);
+}
+
+body[data-riddle="mouse-place-cells"] button {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+body[data-riddle="mouse-place-cells"] .card-note,
+body[data-riddle="mouse-place-cells"] .neuron-sub,
+body[data-riddle="mouse-place-cells"] .rate-pill,
+body[data-riddle="mouse-place-cells"] .trace-legend,
+body[data-riddle="mouse-place-cells"] .network-neuron strong,
+body[data-riddle="mouse-place-cells"] .network-neuron small,
+body[data-riddle="mouse-place-cells"] .map-tile,
+body[data-riddle="mouse-place-cells"] .map-clear,
+body[data-riddle="mouse-place-cells"] .answered-count,
+body[data-riddle="mouse-place-cells"] .quiz-hint,
+body[data-riddle="mouse-place-cells"] .route-line,
+body[data-riddle="mouse-place-cells"] .answer-table,
+body[data-riddle="mouse-place-cells"] .answer-table code {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle="mouse-place-cells"] .network-neuron {
+  min-height: 108px;
+}
+
+body[data-riddle="mouse-place-cells"] .map-trigger {
+  min-height: 42px;
+}
+
+body[data-riddle="mouse-place-cells"] #stepBadge {
+  font-size: 12px !important;
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="mouse-place-cells"] .lesson-grid,
+  body[data-riddle="mouse-place-cells"] .network-layout,
+  body[data-riddle="mouse-place-cells"] .quiz-layout,
+  body[data-riddle="mouse-place-cells"] .reflection {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card {
+    padding: 18px;
+  }
+
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  body[data-riddle="mouse-place-cells"].intro-screen .story-card button {
+    min-height: 48px;
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neurons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open {
+    grid-column: 1 / -1;
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open .map-picker {
+    position: static;
+    width: 100%;
+    margin-top: 5px;
+    transform: none;
+  }
+}
+
+/* Floor 3 — WormMind */
+body[data-riddle="wormmind"] main {
+  width: min(1680px, 100%);
+}
+
+body[data-riddle="wormmind"] .lesson-screen {
+  padding-block: clamp(22px, 3vw, 38px) clamp(32px, 4vw, 52px) !important;
+}
+
+body[data-riddle="wormmind"] .back-action {
+  margin-bottom: 12px;
+}
+
+body[data-riddle="wormmind"] .screen-heading {
+  margin-bottom: 16px;
+}
+
+body[data-riddle="wormmind"] .network-legend {
+  margin-bottom: 8px;
+}
+
+body[data-riddle="wormmind"] .reflection-panel,
+body[data-riddle="wormmind"] .final-questions {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+body[data-riddle="wormmind"] .screen-footer {
+  margin-top: 20px;
+}
+
+body[data-riddle="wormmind"] .brand small,
+body[data-riddle="wormmind"] .step-chip,
+body[data-riddle="wormmind"] .step-chip b,
+body[data-riddle="wormmind"] .paper-link,
+body[data-riddle="wormmind"] .eyebrow,
+body[data-riddle="wormmind"] .arena-header small,
+body[data-riddle="wormmind"] .arena-header > p span,
+body[data-riddle="wormmind"] .circuit-card header small,
+body[data-riddle="wormmind"] .observation-log span,
+body[data-riddle="wormmind"] .instruction-card b,
+body[data-riddle="wormmind"] .network-legend span,
+body[data-riddle="wormmind"] .rewire-counter span,
+body[data-riddle="wormmind"] #editState,
+body[data-riddle="wormmind"] .simulation-badge,
+body[data-riddle="wormmind"] .artificial-key,
+body[data-riddle="wormmind"] .circuit-node small {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="wormmind"] .hero-grid,
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="wormmind"] .topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 921px) {
+  body[data-riddle="wormmind"] .hero-grid,
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 980px) {
+  body[data-riddle="wormmind"] .retest-layout {
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+  }
+
+  body[data-riddle="wormmind"] .result-network-card,
+  body[data-riddle="wormmind"] .single-arena {
+    width: 100%;
+  }
+}
+
+/* WormMind viewport-fit layout. On short laptop/desktop viewports, use the
+   available width for the explanation and activity instead of shrinking the
+   whole page or forcing every section into a long vertical stack. */
+@media (min-width: 921px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .app-shell {
+    min-height: 100dvh;
+  }
+
+  body[data-riddle="wormmind"] .topbar {
+    min-height: 58px;
+    padding: 5px clamp(14px, 2vw, 30px);
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .brand {
+    min-width: 146px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  body[data-riddle="wormmind"] .brand-mark svg {
+    width: 27px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-progress {
+    gap: 4px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-progress > i {
+    width: clamp(5px, 1vw, 14px);
+  }
+
+  body[data-riddle="wormmind"] .step-chip {
+    min-height: 38px;
+    padding-inline: 7px;
+  }
+
+  body[data-riddle="wormmind"] .paper-link {
+    min-width: 68px;
+    height: 36px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen {
+    min-height: calc(100dvh - 58px);
+    padding: 8px clamp(16px, 2.2vw, 34px) 10px !important;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) {
+    display: grid;
+    grid-template-columns: minmax(270px, .56fr) minmax(0, 1.44fr);
+    grid-template-rows: auto minmax(340px, auto) auto;
+    align-items: start;
+    gap: 7px 18px;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .back-action {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .screen-heading {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen:not(.intro-screen) > .screen-footer {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .back-action {
+    min-height: 34px;
+    margin: 0;
+    padding-inline: 13px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading {
+    margin: 0;
+    display: grid;
+    align-content: start;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading h2 {
+    margin: 0;
+    font-size: clamp(27px, 2.35vw, 38px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="wormmind"] .screen-heading > div > p:not(.eyebrow) {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+
+  body[data-riddle="wormmind"] .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card {
+    width: 100%;
+    padding: 9px 11px;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card p {
+    margin: 4px 0 2px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .instruction-card small {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .rewire-counter {
+    min-width: 0;
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="wormmind"] .rewire-counter strong {
+    margin-top: 2px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="wormmind"] .simulation-badge {
+    justify-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen > .arena-grid,
+  body[data-riddle="wormmind"] .rewire-screen > .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-screen > .retest-layout {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen > .reflection-panel,
+  body[data-riddle="wormmind"] .rewire-screen > .reflection-panel {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend {
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    align-self: start;
+    margin-top: 34px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-question {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .retest-screen > .final-questions {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .retest-screen:has(.final-questions:not([hidden])) > .screen-footer {
+    grid-row: 4;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])),
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .arena-grid,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .circuit-comparison {
+    grid-row: 2 / span 2;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .reflection-panel,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .reflection-panel {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .behavior-screen:has(.reflection-panel:not([hidden])) > .screen-footer,
+  body[data-riddle="wormmind"] .rewire-screen:has(.reflection-panel:not([hidden])) > .screen-footer {
+    grid-row: 4;
+  }
+
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-layout {
+    gap: 10px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header,
+  body[data-riddle="wormmind"] .circuit-card > header {
+    min-height: 48px;
+    padding: 6px 10px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header .sex-icon,
+  body[data-riddle="wormmind"] .circuit-card .sex-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
+  }
+
+  body[data-riddle="wormmind"] .arena-header h3,
+  body[data-riddle="wormmind"] .circuit-card h3 {
+    margin-top: 1px;
+    font-size: 17px;
+    line-height: 1.18;
+  }
+
+  body[data-riddle="wormmind"] .arena-header > p strong {
+    font-size: 20px;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage {
+    height: clamp(240px, calc(100dvh - 310px), 330px);
+  }
+
+  body[data-riddle="wormmind"] .arena-footer {
+    min-height: 42px;
+    padding: 5px 9px;
+  }
+
+  body[data-riddle="wormmind"] .observation-log span {
+    min-height: 30px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-board,
+  body[data-riddle="wormmind"] .result-network-card .circuit-board {
+    height: clamp(330px, calc(100dvh - 285px), 430px);
+  }
+
+  body[data-riddle="wormmind"] .rewire-feedback {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .network-legend {
+    min-height: 30px;
+    margin: 0;
+    padding: 5px 10px;
+    gap: 14px;
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel,
+  body[data-riddle="wormmind"] .final-questions {
+    margin: 0;
+    padding: 11px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  body[data-riddle="wormmind"] .question-index {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel h3,
+  body[data-riddle="wormmind"] .final-questions h3,
+  body[data-riddle="wormmind"] .network-question h3 {
+    margin-bottom: 7px;
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel label,
+  body[data-riddle="wormmind"] .final-fields label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .reflection-panel textarea {
+    height: 58px;
+    min-height: 58px;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .reflection-footer {
+    min-height: 42px;
+    margin-top: 7px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .screen-footer {
+    margin: 0;
+    padding-top: 6px;
+    gap: 8px;
+  }
+
+  body[data-riddle="wormmind"] .screen-reference {
+    line-height: 1.35;
+  }
+
+  body[data-riddle="wormmind"] .hero-grid {
+    grid-template-columns: minmax(0, 1.18fr) minmax(340px, .82fr) !important;
+    align-items: start;
+    gap: 18px;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(145px, 26%);
+    align-items: start;
+    gap: 0 14px;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy > .eyebrow,
+  body[data-riddle="wormmind"] .hero-copy > h1,
+  body[data-riddle="wormmind"] .hero-copy > h2 {
+    grid-column: 1 / -1;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy h1 {
+    font-size: clamp(34px, 3vw, 46px);
+    line-height: 1.02;
+  }
+
+  body[data-riddle="wormmind"] .hero-copy h2 {
+    margin: 8px 0 10px;
+    font-size: clamp(21px, 1.75vw, 26px);
+    line-height: 1.2;
+  }
+
+  body[data-riddle="wormmind"] .hero-lead {
+    grid-column: 1;
+    grid-row: 4;
+    font-size: 14px;
+    line-height: 1.48;
+  }
+
+  body[data-riddle="wormmind"] .lead-break {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="wormmind"] .intro-motion {
+    grid-column: 2;
+    grid-row: 4;
+    width: 100%;
+    margin: 0;
+  }
+
+  body[data-riddle="wormmind"] .specimen-board {
+    padding: 9px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro {
+    padding: 1px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro > h3 {
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="wormmind"] .reproduction-note {
+    padding: 7px 9px;
+    gap: 7px;
+  }
+
+  body[data-riddle="wormmind"] .reproduction-note p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card header {
+    min-height: 46px;
+    padding: 6px 9px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card .sex-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card h3 {
+    font-size: 16px;
+  }
+
+  body[data-riddle="wormmind"] .specimen-card figure {
+    height: clamp(74px, 13dvh, 116px);
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="wormmind"] .intro-wide-cta {
+    min-height: 40px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1200px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .specimen-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="wormmind"] .specimen-intro {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1199px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .circuit-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(275px, .45fr);
+    grid-template-rows: auto auto minmax(330px, auto) auto;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .screen-heading {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .circuit-screen > .circuit-comparison {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .network-question {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .circuit-screen > .screen-footer {
+    grid-row: 4;
+  }
+}
+
+@media (min-width: 921px) and (max-height: 600px) {
+  body[data-riddle="wormmind"] .arena-stage {
+    height: clamp(205px, calc(100dvh - 310px), 245px);
+  }
+
+  body[data-riddle="wormmind"] .circuit-board,
+  body[data-riddle="wormmind"] .result-network-card .circuit-board {
+    height: clamp(250px, calc(100dvh - 285px), 315px);
+  }
+
+  body[data-riddle="wormmind"] .circuit-node {
+    width: 118px;
+    min-height: 54px;
+    padding: 5px 7px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node.sensory {
+    width: 126px;
+    padding: 15px 9px 5px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node.motor {
+    width: 116px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node small {
+    margin-bottom: 2px;
+  }
+
+  body[data-riddle="wormmind"] .circuit-node strong {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="wormmind"] .network-legend {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    overflow-x: visible;
+  }
+
+  body[data-riddle="wormmind"] .network-legend span {
+    min-width: 0;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage {
+    display: grid;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage canvas {
+    width: 100%;
+    height: 300px;
+  }
+
+  body[data-riddle="wormmind"] .classification-panel {
+    position: static;
+    min-height: 0;
+    margin: 10px;
+  }
+}
+
+/* Final viewport-fit refinements. Keep the type at its natural size and use
+   the available width/height before introducing a scroll surface. */
+body[data-riddle="skin-temperature"] .gauge-stage,
+body[data-riddle="skin-temperature"] .result-gauge-stage {
+  min-height: 0 !important;
+}
+
+@media (min-width: 701px) and (max-height: 700px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    row-gap: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #buildVisualHost,
+  body[data-riddle^="dendritic-riddle"] #caseVisualHost,
+  body[data-riddle^="dendritic-riddle"] #verifyVisualHost,
+  body[data-riddle^="dendritic-riddle"] #rationaleVisualHost,
+  body[data-riddle^="dendritic-riddle"] .board-stage-visual,
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    min-height: 0 !important;
+    max-height: 100%;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 900px) {
+  body[data-riddle="skin-temperature"] .shell,
+  body[data-riddle="movement-direction"] .shell,
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-block: 8px 10px;
+  }
+
+  body[data-riddle="skin-temperature"] .top,
+  body[data-riddle="movement-direction"] .top,
+  body[data-riddle="hippocampal-object-neuron"] .top {
+    min-height: 38px;
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="skin-temperature"] .steps,
+  body[data-riddle="movement-direction"] .steps,
+  body[data-riddle="hippocampal-object-neuron"] .steps {
+    margin-bottom: 10px;
+  }
+
+  body[data-riddle="skin-temperature"] .has-back,
+  body[data-riddle="movement-direction"] .has-back {
+    padding-top: 38px;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    height: clamp(250px, 45dvh, 390px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-grid {
+    min-height: calc(100dvh - 145px) !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro h1 {
+    margin-bottom: 10px;
+    font-size: clamp(38px, 3.35vw, 46px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .lede {
+    font-size: 17px;
+    line-height: 1.48;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .intro-copy .actions {
+    margin-top: 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-intro .citation {
+    margin-top: 12px;
+    padding-top: 10px;
+    line-height: 1.45;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .back-nav,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .back-nav {
+    min-height: 34px;
+    margin-bottom: 8px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    align-items: center;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head .eyebrow,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .eyebrow {
+    margin-bottom: 6px;
+    padding-block: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head h2,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head h2 {
+    margin-bottom: 5px;
+    font-size: clamp(30px, 2.8vw, 38px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li {
+    min-height: 0;
+    padding: 7px 39px 7px 8px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li::before {
+    top: 7px;
+    right: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: min(58dvh, 380px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .patient-scene {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    height: 100%;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    align-items: center;
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .explain {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 340px) !important;
+    gap: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode.active {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "head back"
+      "decode decode"
+      "final final"
+      "source source";
+    align-items: start;
+    gap: 8px 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .back-nav {
+    grid-area: back;
+    margin: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .decode-head {
+    grid-area: head;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .decode-section {
+    grid-area: decode;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .final-question {
+    grid-area: final;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode > .source {
+    grid-area: source;
+    margin-top: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 11px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main {
+    display: grid;
+    grid-template-columns: minmax(210px, .62fr) minmax(0, 1.38fr);
+    grid-template-areas:
+      "neuron raster"
+      "title summary"
+      "categories categories";
+    align-items: center;
+    gap: 5px 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-neuron {
+    grid-area: neuron;
+    gap: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .neuron-badge {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    grid-area: raster;
+    margin: 8px 0 9px;
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-head {
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-svg {
+    height: 54px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > h3 {
+    grid-area: title;
+    margin-bottom: 3px;
+    font-size: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .small {
+    grid-area: summary;
+    margin-bottom: 7px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-grid {
+    grid-area: categories;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel {
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 {
+    min-height: 28px;
+    margin-bottom: 4px;
+    font-size: 11.5px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 span:last-child {
+    padding: 1px 4px;
+    font-size: 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .stimuli-grid {
+    gap: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus {
+    padding: 3px;
+    border-radius: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: clamp(42px, 7dvh, 56px);
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 18px;
+    margin-top: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    top: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .question {
+    font-size: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    margin: 8px 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .option {
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box {
+    margin-top: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box label {
+    margin-bottom: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box textarea {
+    min-height: 60px;
+    height: 60px;
+    padding: 8px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .actions {
+    margin-top: 8px;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 700px) {
+  body[data-riddle="movement-direction"] .shell {
+    padding-bottom: 0;
+  }
+
+  body[data-riddle="movement-direction"] #decode .source {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 330px), 460px);
+    min-width: 300px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 280px);
+    min-width: 260px;
+  }
+}
+
+/* A short but wide laptop still has enough horizontal room for a comfortably
+   sized direction board. Use that room instead of leaving the lower half of
+   the activity visually empty. */
+@media (min-width: 1181px) and (max-height: 700px) {
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 270px), 380px);
+    min-width: 330px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, calc(100dvh - 290px), 350px);
+    min-width: 330px;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) and (max-height: 700px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    grid-template-columns: minmax(0, 1fr) minmax(150px, .8fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    height: min(46dvh, 285px) !important;
+    min-height: 245px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] #record #conditionPlots {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-grid {
+    grid-template-columns: minmax(0, 1fr) 230px !important;
+    gap: 12px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-main {
+    grid-template-columns: minmax(0, 1.15fr) minmax(270px, .85fr);
+    gap: 6px 10px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 5px 8px;
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .cool-control .cool-note {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    min-height: 92px;
+    height: 92px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls .button {
+    padding-block: 7px;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    margin-block: 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: 54px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-riddle] {
+    scroll-behavior: auto;
+  }
+}
+
+/* Language-neuron viewport fit.
+   The source page used CSS zoom on short screens, which made the interface
+   look tiny while it still required a long scroll. Keep type at a readable
+   size and let each desktop step use the full iframe as a compact workspace. */
+body[data-riddle="language-neuron"] {
+  zoom: 1 !important;
+}
+
+body[data-riddle="language-neuron"] .classification-reference figcaption,
+body[data-riddle="language-neuron"] .split-demo-category > span,
+body[data-riddle="language-neuron"] .split-demo-target.test .split-demo-category > span,
+body[data-riddle="language-neuron"] .prediction-tile span,
+body[data-riddle="language-neuron"] .score-orb span,
+body[data-riddle="language-neuron"] .result-gauge small,
+body[data-riddle="language-neuron"] .split-divider,
+body[data-riddle="language-neuron"] .split-divider span,
+body[data-riddle="language-neuron"] .training-status {
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+@media (min-width: 761px) {
+  body[data-riddle="language-neuron"] {
+    min-height: 100dvh;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="language-neuron"] .app-shell {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 100dvh;
+    padding: 8px 20px 10px;
+  }
+
+  body[data-riddle="language-neuron"] .app-header {
+    min-height: 34px;
+  }
+
+  body[data-riddle="language-neuron"] .brand {
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+
+  body[data-riddle="language-neuron"] .brand-mark svg {
+    width: 23px;
+  }
+
+  body[data-riddle="language-neuron"] .icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  body[data-riddle="language-neuron"] .step-track {
+    height: 4px;
+    margin: 5px 0 8px;
+  }
+
+  body[data-riddle="language-neuron"] .step-segment {
+    height: 4px;
+  }
+
+  body[data-riddle="language-neuron"] main {
+    min-height: 0;
+  }
+
+  body[data-riddle="language-neuron"] .screen.active {
+    position: relative;
+    min-height: 0;
+    height: calc(100dvh - 69px);
+  }
+
+  body[data-riddle="language-neuron"] .back-button {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    min-height: 34px;
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="language-neuron"] h1 {
+    margin-bottom: 10px;
+    font-size: clamp(34px, 3.15vw, 48px);
+  }
+
+  body[data-riddle="language-neuron"] h2 {
+    margin-bottom: 5px;
+    font-size: clamp(28px, 2.5vw, 34px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="language-neuron"] h3 {
+    margin-bottom: 6px;
+  }
+
+  body[data-riddle="language-neuron"] .lede {
+    max-width: none;
+    margin-bottom: 5px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="language-neuron"] .section-heading,
+  body[data-riddle="language-neuron"] .lab-heading {
+    max-width: none;
+    margin-bottom: 7px;
+    padding-left: 96px;
+  }
+
+  body[data-riddle="language-neuron"] .lab-heading p {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="language-neuron"] .eyebrow {
+    margin-bottom: 4px;
+    padding: 4px 9px;
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="language-neuron"] .button {
+    min-height: 38px;
+    padding: 7px 14px;
+  }
+
+  body[data-riddle="language-neuron"] .button.large {
+    padding: 9px 18px;
+    font-size: 16px;
+  }
+
+  body[data-riddle="language-neuron"] .actions,
+  body[data-riddle="language-neuron"] .screen-footer {
+    margin-top: 7px;
+  }
+
+  /* Result overview */
+  body[data-riddle="language-neuron"] #screen-aggregate.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .sentence-lines span {
+    display: inline;
+    white-space: normal !important;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .sentence-lines span + span::before {
+    content: " ";
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .results-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-card {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-plot-layout,
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame {
+    min-height: 0;
+    height: 100%;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame {
+    display: grid;
+    place-items: center;
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .capture-frame img {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .axis-title-x {
+    margin-top: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .results-copy {
+    align-self: center;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 14px;
+    margin-bottom: 7px;
+    padding: 10px 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-card h3,
+  body[data-riddle="language-neuron"] #screen-aggregate .legend-item {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .instruction-card {
+    margin-top: 0;
+    padding: 10px 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-aggregate .instruction-card p {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  /* Manual classification */
+  body[data-riddle="language-neuron"] #screen-classify.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .lab-heading {
+    align-items: center;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sorter {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(210px, .8fr) minmax(310px, 1.2fr) minmax(210px, .8fr) !important;
+    grid-template-areas: "nonword current word" !important;
+    gap: 9px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sort-bin,
+  body[data-riddle="language-neuron"] #screen-classify .current-trial {
+    min-height: 0 !important;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sort-bin {
+    overflow: hidden;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .bin-header {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .bin-stack {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .mini-trace {
+    padding: 3px;
+    border-radius: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .mini-trace img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trial-index {
+    padding: 3px 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trial-question-row {
+    margin: 3px 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trace-stage {
+    min-height: 0;
+    height: 58px;
+    padding: 6px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .trace-stage img {
+    height: 42px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .classification-reference {
+    min-height: 0;
+    margin-top: 5px;
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .classification-reference img {
+    width: 100%;
+    height: clamp(105px, 20dvh, 155px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .completion-panel {
+    min-height: 0;
+    margin-top: 0;
+    padding: 7px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-classify .sub-actions {
+    margin-top: 0;
+  }
+
+  /* Human-result review */
+  body[data-riddle="language-neuron"] #screen-review.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .lab-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-grid {
+    min-height: 0;
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-column,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-column {
+    min-height: 0;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-list,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-item,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-item {
+    min-width: 0;
+    padding: 3px;
+    border-width: 1px;
+    border-radius: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-item img,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-item img {
+    height: 17px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .review-status,
+  body[data-riddle="language-neuron"] #screen-ai-test .review-status {
+    margin-top: 2px;
+    font-size: 12px !important;
+    line-height: 1.15;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-stack,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-stack {
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-card,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-card {
+    gap: 9px;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-number,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-number {
+    flex-basis: 32px;
+    height: 32px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .question-content label,
+  body[data-riddle="language-neuron"] #screen-ai-test .question-content label {
+    margin-bottom: 3px;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .followup-label {
+    margin-top: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review textarea,
+  body[data-riddle="language-neuron"] #screen-ai-test textarea {
+    min-height: 45px;
+    height: 45px;
+    padding: 6px 8px;
+    resize: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review input,
+  body[data-riddle="language-neuron"] #screen-ai-test input {
+    min-height: 34px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-review .screen-footer {
+    margin: 0;
+  }
+
+  /* Four learning cards share one row instead of becoming a long 2x2 page. */
+  body[data-riddle="language-neuron"] #screen-ai-explain.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading {
+    max-width: none;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span {
+    display: inline;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span + span {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .ai-explain-heading .lede span + span::before {
+    content: " ";
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .important-note {
+    margin-top: 5px;
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-accordions {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-accordion {
+    height: auto;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-toggle {
+    min-height: 49px;
+    height: auto;
+    gap: 7px;
+    padding: 7px 9px;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .step-no {
+    flex-basis: 29px;
+    width: 29px;
+    height: 29px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-detail {
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .learning-detail p {
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .step-illustration {
+    min-height: 0;
+    height: clamp(150px, 26dvh, 195px);
+    padding: 6px;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-category {
+    padding: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-mini-grid {
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .example-mini-grid img,
+  body[data-riddle="language-neuron"] #screen-ai-explain .training-labeled-examples img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo {
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-source,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target {
+    padding: 4px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-source > strong,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target > strong {
+    margin-bottom: 2px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-category {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 3px;
+    margin-top: 2px;
+    padding: 2px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target .split-demo-category {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-target.test .split-demo-category {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-trace {
+    height: 13px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-demo-paths {
+    height: 21px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model {
+    width: 100%;
+    max-width: 130px;
+    height: 74px;
+    padding: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model span {
+    font-size: 21px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .mini-model.detailed-model strong,
+  body[data-riddle="language-neuron"] #screen-ai-explain .split-example-caption strong {
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .single-example {
+    padding: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .single-example img {
+    height: 23px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .output-label {
+    min-width: 80px;
+    padding: 7px;
+    font-size: 14px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-explain .screen-footer {
+    margin: 0;
+  }
+
+  /* Data split: show the full dataset as a dense, readable matrix. */
+  body[data-riddle="language-neuron"] #screen-split.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .lab-heading {
+    align-items: center;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .split-screen-copy {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px 12px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .balance-status {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .split-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(270px, .36fr) 32px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-zone {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    min-height: 0;
+    height: 100%;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-header h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-count {
+    font-size: 19px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-breakdown {
+    gap: 4px;
+    margin: 3px 0 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-breakdown span {
+    padding: 2px 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .train-zone .dataset-grid {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .test-zone .dataset-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-grid {
+    align-content: start;
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-card {
+    display: grid;
+    grid-template-rows: 11px 15px;
+    min-height: 29px;
+    height: 29px;
+    padding: 1px 2px;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .dataset-card img {
+    height: 11px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .truth-chip {
+    max-width: 100%;
+    margin-top: 0;
+    padding: 0 2px;
+    overflow: hidden;
+    font-size: 12px !important;
+    line-height: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .empty-state {
+    align-self: center;
+    margin: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-split .screen-footer {
+    margin: 0;
+  }
+
+  /* Training */
+  body[data-riddle="language-neuron"] #screen-ai-train.active {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train #aiTrainTitle {
+    font-size: clamp(27px, 2.45vw, 33px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-stage {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(420px, 1.25fr) auto minmax(260px, .75fr) !important;
+    gap: 12px;
+    margin: 0 auto;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-set-card {
+    padding: 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-set-card h3 {
+    margin-bottom: 6px;
+    font-size: 18px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-groups {
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-groups > div {
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-thumbs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .training-thumbs img {
+    height: 20px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .ai-model-card {
+    min-height: 0;
+    height: 100%;
+    padding: 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-train .run-controls {
+    margin: 0;
+  }
+
+  /* Model test. The completed state uses the wide screen to keep the result,
+     reflection prompts and multiple-choice checks in view together. */
+  body[data-riddle="language-neuron"] #screen-ai-test.active {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .section-heading {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test #aiTestTitle {
+    font-size: clamp(27px, 2.45vw, 33px);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-instruction {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .fake-test-layout {
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: minmax(260px, .85fr) minmax(210px, .55fr) minmax(330px, 1.1fr) !important;
+    gap: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue,
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-column {
+    min-height: 0;
+    height: 100%;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-progress {
+    margin-bottom: 4px;
+    font-size: 17px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-card {
+    min-height: 27px;
+    height: 27px;
+    padding: 2px;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-queue-card img {
+    height: 20px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .test-model {
+    min-height: 0;
+    height: 100%;
+    padding: 8px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-columns {
+    min-height: 0;
+    height: 100%;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile {
+    min-height: 0;
+    padding: 2px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile img {
+    height: 16px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .prediction-tile span {
+    margin-top: 1px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test > .screen-footer {
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test > .screen-footer:has(#checkModel[hidden]) {
+    display: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .paper-source {
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) {
+    grid-template-columns: minmax(360px, .38fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading heading"
+      "instruction instruction"
+      "test summary"
+      "source source";
+    gap: 5px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .section-heading {
+    grid-area: heading;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .test-instruction {
+    grid-area: instruction;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .fake-test-layout {
+    grid-area: test;
+    grid-template-columns: minmax(95px, .62fr) minmax(120px, .62fr) minmax(155px, 1.25fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .model-summary {
+    grid-area: summary;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test.active:has(#modelSummary:not([hidden])) > .paper-source {
+    grid-area: source;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary {
+    position: relative;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "review mcq"
+      "questions interpretation"
+      "footer footer";
+    gap: 6px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary > .review-grid {
+    grid-area: review;
+    min-height: 0;
+    gap: 5px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-fraction {
+    position: absolute;
+    z-index: 2;
+    top: -1px;
+    left: 50%;
+    margin: 0;
+    padding: 4px 8px;
+    border-radius: 9px;
+    font-size: 15px;
+    transform: translateX(-50%);
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-questions {
+    grid-area: questions;
+    max-width: none;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card {
+    grid-area: interpretation;
+    max-width: none;
+    margin: 0;
+    padding: 8px 10px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card label {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .interpretation-card p {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-section {
+    grid-area: mcq;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-card {
+    min-height: 0;
+    padding: 7px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-prompt {
+    margin-bottom: 3px;
+    padding-bottom: 3px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-option {
+    gap: 5px;
+    padding: 3px 2px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .mcq-option input {
+    min-height: 0;
+    margin-top: 2px;
+  }
+
+  body[data-riddle="language-neuron"] #screen-ai-test .model-summary > .screen-footer {
+    grid-area: footer;
+    margin: 0;
+  }
+}
+
+/* Short desktop intro cards: the image gives back enough height for the
+   answer button, avoiding a tiny residual scroll in riddles 2–4. */
+@media (min-width: 701px) and (max-height: 700px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+    padding-block: 10px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .visual-frame img {
+    height: clamp(190px, 34dvh, 260px) !important;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* The in-game chrome leaves about 543px of iframe height on a short laptop.
+   Give the riddle text the wider column there so the complete prompt, choices,
+   and continue action remain visible without scrolling. */
+@media (min-width: 901px) and (max-height: 600px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep0 {
+    row-gap: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3px 9px;
+    margin-block: 2px 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro > * {
+    margin: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro h2 {
+    font-size: 22px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 > .step-intro p {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .prompt-card {
+    gap: 7px;
+    padding: 6px 12px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-main {
+    grid-template-columns: minmax(275px, .76fr) minmax(0, 1.24fr);
+    gap: 14px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-title {
+    margin-bottom: 5px;
+    font-size: clamp(22px, 2.35vw, 30px);
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .story {
+    margin-block: 4px 7px;
+    font-size: 14px;
+    line-height: 1.32;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .task {
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs {
+    margin-top: 5px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-inputs .pill {
+    padding: 4px 7px;
+  }
+
+  body[data-riddle^="dendritic-riddle"] #flowStep0 .puzzle-continue-btn {
+    min-height: 38px;
+    margin-top: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Phones keep one natural page scroll; no nested work area is introduced. */
+@media (max-width: 760px) {
+  body[data-riddle="language-neuron"] .screen.active {
+    height: auto;
+    min-height: 0;
+  }
+
+  body[data-riddle="language-neuron"] .back-button {
+    position: static;
+    margin-bottom: 10px;
+  }
+
+  body[data-riddle="language-neuron"] .section-heading,
+  body[data-riddle="language-neuron"] .lab-heading {
+    padding-left: 0;
+  }
+
+  body[data-riddle="language-neuron"] .learning-accordions {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] .truth-chip,
+  body[data-riddle="language-neuron"] .prediction-tile span,
+  body[data-riddle="language-neuron"] .review-status,
+  body[data-riddle="language-neuron"] .classification-reference figcaption,
+  body[data-riddle="language-neuron"] .split-demo-category > span {
+    font-size: 12px !important;
+  }
+}
+
+/* Tablet-width WormMind circuit step: keep the two circuit diagrams in the
+   wide column and stack the explanation/question within the side column.
+   This comes after the shared short-viewport rules so the 996x543 in-game
+   iframe does not fall back to a long third row. */
+@media (min-width: 921px) and (max-width: 1199px) and (max-height: 820px) {
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(275px, .45fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .back-action {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .screen-heading {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .network-legend,
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .circuit-comparison {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .network-question {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  body[data-riddle="wormmind"] .lesson-screen.circuit-screen > .screen-footer {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+/* Floor 2 in the short in-game iframe (roughly 543px high). The activity
+   remains one complete workspace: illustrations yield a little height and
+   instructions use the plentiful horizontal room. */
+@media (min-width: 821px) and (max-height: 600px) {
+  body[data-riddle="skin-temperature"] .shell,
+  body[data-riddle="movement-direction"] .shell,
+  body[data-riddle="hippocampal-object-neuron"] .shell {
+    padding-bottom: 2px;
+  }
+
+  body[data-riddle="skin-temperature"] #intro .intro-grid {
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #intro .photo-card img {
+    height: min(83dvh, 450px) !important;
+    aspect-ratio: auto !important;
+    object-fit: cover;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    height: min(49dvh, 265px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    height: min(43dvh, 235px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side {
+    padding: 9px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side h3 {
+    margin-bottom: 5px;
+    font-size: 17px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side .instructions {
+    margin-top: 2px;
+    padding-inline-start: 18px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-side .instructions li {
+    padding-block: 2px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    height: 100px;
+    min-height: 100px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="skin-temperature"] #record .lab-bottom-controls .button {
+    min-height: 38px;
+    padding-block: 7px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, .72fr);
+    gap: 12px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions {
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.42;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions h3 {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions li {
+    padding-bottom: 4px;
+  }
+
+  body[data-riddle="movement-direction"] #record .experiment-instructions .actions {
+    margin-top: 6px;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual {
+    width: min(100%, 240px);
+    min-width: 220px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 240px);
+    min-width: 220px;
+  }
+
+  body[data-riddle="movement-direction"] #decode .result-stage.responsive-direction-stage {
+    grid-template-columns: minmax(220px, 240px) minmax(0, 1fr);
+  }
+
+  body[data-riddle="movement-direction"] #decode .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  body[data-riddle="movement-direction"] .target-index {
+    font-size: 12px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain > .back-nav {
+    min-height: 34px;
+    margin-bottom: 8px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-grid {
+    min-height: 0 !important;
+    gap: 16px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy {
+    padding: 16px 18px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .eyebrow {
+    margin-bottom: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy h2 {
+    margin-bottom: 6px;
+    font-size: clamp(27px, 2.5vw, 34px);
+    line-height: 1.12;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .lede {
+    margin-bottom: 7px;
+    font-size: 15.5px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .explain {
+    margin-bottom: 7px;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .transition-copy .button {
+    min-height: 38px;
+    padding-block: 7px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .anatomy-card {
+    padding: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-brain .anatomy-card img {
+    max-height: calc(100dvh - 155px);
+    object-fit: contain;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment.screen.active {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+    grid-template-areas:
+      "head head"
+      "instructions instructions"
+      "scene gallery-head"
+      "scene gallery"
+      "scene gallery-hint"
+      "analysis analysis";
+    gap: 6px 14px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-head {
+    min-height: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions {
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions > strong {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px;
+    margin-top: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li {
+    padding: 6px 34px 6px 7px;
+    font-size: 12.5px;
+    line-height: 1.28;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .instructions li::before {
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: min(41dvh, 222px);
+    margin-bottom: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card {
+    padding: 10px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-card .raster-panel {
+    margin-block: 5px;
+    padding: 7px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .live-raster-grid .raster-svg {
+    height: 44px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .carousel-shell {
+    gap: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-arrow {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .carousel-window {
+    padding-bottom: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card {
+    flex-basis: 94px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment .image-card img {
+    height: 50px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .trial-hint {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head {
+    min-height: 0;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .eyebrow {
+    margin-bottom: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head h2 {
+    margin-bottom: 2px;
+    font-size: clamp(27px, 2.45vw, 33px);
+    line-height: 1.08;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-head .explain {
+    font-size: 13.5px;
+    line-height: 1.28;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .progress-count {
+    padding: 6px 9px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main,
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card {
+    padding: 8px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .decode-main > .raster-panel {
+    margin-block: 4px;
+    padding-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .raster-svg {
+    height: 42px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel {
+    padding: 3px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 {
+    min-height: 25px;
+    margin-bottom: 3px;
+    font-size: 12px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .category-panel h3 span:last-child {
+    font-size: 10.5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .stimuli-grid {
+    gap: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus {
+    padding: 2px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus img {
+    height: 34px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .result-stimulus .mini-raster {
+    height: 14px;
+    margin-top: 1px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .question {
+    font-size: 15px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-options {
+    gap: 4px;
+    margin-block: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .option {
+    min-height: 32px;
+    padding: 4px 6px;
+    font-size: 12.5px;
+    line-height: 1.18;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box {
+    margin-top: 5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box label {
+    margin-bottom: 2px;
+    font-size: 12.5px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .reason-box textarea {
+    min-height: 42px;
+    height: 42px;
+    padding: 5px 7px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .actions {
+    margin-top: 4px;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-decode .answer-card .button {
+    min-height: 36px;
+    padding-block: 6px;
+  }
+}
+
+@media (min-width: 821px) and (max-width: 1180px) and (max-height: 600px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage {
+    height: min(43dvh, 235px) !important;
+    min-height: 0 !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .responsive-direction-visual,
+  body[data-riddle="movement-direction"] #decode .responsive-direction-visual {
+    width: min(100%, 220px);
+    min-width: 210px;
+  }
+}
+
+/* On phones Floor 1 genuinely needs vertical space. Let the iframe document
+   provide that one natural scroll instead of trapping the user inside a
+   smaller nested workflow panel. */
+@media (max-width: 700px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep0:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep1:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep2:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep3:not([hidden]),
+  body[data-riddle^="dendritic-riddle"] #flowStep4:not([hidden]) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    overflow: visible !important;
+    overscroll-behavior: auto;
+  }
+}
+
+/* Final cascade guard: the short-viewport rules above must not flatten the
+   record-stage rasters back into grids. */
+@media (min-width: 651px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(84px, 16%, 116px) !important;
+    height: 49px !important;
+    min-height: 0 !important;
+    padding: 4px 5px !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-0 { left: 0 !important; right: auto !important; top: 68% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-1 { left: 14% !important; right: auto !important; top: 39% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-2 { left: 31% !important; right: auto !important; top: 2% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-3 { left: 53% !important; right: auto !important; top: 2% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-4 { left: 70% !important; right: auto !important; top: 39% !important; bottom: auto !important; }
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-5 { left: auto !important; right: 0 !important; top: 68% !important; bottom: auto !important; }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster {
+    position: absolute !important;
+    inset: auto !important;
+    width: clamp(82px, 17%, 108px) !important;
+    height: 58px !important;
+    min-height: 0 !important;
+    padding: 5px 7px !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: auto !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-0 { left: 50% !important; right: auto !important; top: 7% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-1 { left: 82% !important; right: auto !important; top: 18% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-2 { left: 90% !important; right: auto !important; top: 50% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-3 { left: 82% !important; right: auto !important; top: 82% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-4 { left: 50% !important; right: auto !important; top: 93% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-5 { left: 18% !important; right: auto !important; top: 82% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-6 { left: 10% !important; right: auto !important; top: 50% !important; bottom: auto !important; }
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-7 { left: 18% !important; right: auto !important; top: 18% !important; bottom: auto !important; }
+
+  body[data-riddle="movement-direction"] #record #plotRing .mini-title {
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #plotRing .mini-title small {
+    font-size: 9.5px !important;
+  }
+}
+
+@media (min-width: 901px) {
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-2 {
+    left: calc(83% + 8px + clamp(41px, 8.5%, 54px)) !important;
+  }
+
+  body[data-riddle="movement-direction"] #record #boardStage.responsive-direction-stage > #plotRing.plot-ring > .mini-raster.plot-6 {
+    left: calc(17% - 8px - clamp(41px, 8.5%, 54px)) !important;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 650px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    width: min(58%, 540px) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record .skin-scene {
+    height: 120px !important;
+    min-height: 120px !important;
+  }
+
+  body[data-riddle="movement-direction"] #record .board-stage.responsive-direction-stage {
+    width: min(100%, 430px) !important;
+    max-width: 430px !important;
+  }
+
+  body[data-riddle="hippocampal-object-neuron"] #screen-experiment > .lab-scene {
+    height: 230px !important;
+    min-height: 230px !important;
+  }
+}
+
+/* Anchor each temperature raster to the gauge geometry, with a small, stable
+   clearance from the coloured arc at every desktop width. */
+@media (min-width: 901px) {
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    inset: auto auto -4px 50% !important;
+    width: min(62%, 620px) !important;
+    height: auto !important;
+    aspect-ratio: 700 / 390;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition {
+    width: clamp(92px, 19%, 116px) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-0 {
+    left: 11.4% !important;
+    right: auto !important;
+    top: 65% !important;
+    transform: translate(calc(-100% - 8px), -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-1 {
+    left: calc(22.725881% - clamp(23px, 4.75%, 29px) - 17.906854px) !important;
+    right: auto !important;
+    top: calc(33.097736% - clamp(23px, 8.525641%, 29px) - 17.906854px) !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-2 {
+    left: 38.8% !important;
+    right: auto !important;
+    top: 12.8% !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-3 {
+    left: 61.2% !important;
+    right: auto !important;
+    top: 12.8% !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-4 {
+    left: calc(77.274119% + clamp(23px, 4.75%, 29px) + 17.906854px) !important;
+    right: auto !important;
+    top: calc(33.097736% - clamp(23px, 8.525641%, 29px) - 17.906854px) !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit > .condition.orbit-5 {
+    left: 88.6% !important;
+    right: auto !important;
+    top: 65% !important;
+    transform: translate(8px, -50%) !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 650px) {
+  body[data-riddle="skin-temperature"] #record .responsive-gauge-visual > #temperatureGauge {
+    bottom: -22px !important;
+  }
+
+  body[data-riddle="skin-temperature"] #record #gaugeStage.responsive-gauge-stage > #conditionPlots.plot-orbit {
+    bottom: -22px !important;
+    width: min(58%, 540px) !important;
+  }
+}
+
+/* Keep decimal threshold values in their logical LTR order inside RTL SVG text. */
+g[aria-label^="סף ליצירת פוטנציאל פעולה"] > text {
+  unicode-bidi: plaintext !important;
+}

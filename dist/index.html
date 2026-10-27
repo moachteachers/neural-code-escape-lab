@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#06111f">
+  <meta name="description" content="חדר בריחה תלת־ממדי בנושא חידות נוירונים בשלוש קומות">
+  <title>הבריחה מהמעבדה</title>
+  <link rel="preload" as="image" href="assets/floor-dendrite-room.png">
+  <link rel="preload" as="image" href="assets/avatar-sheet-family-cgi.png">
+  <link rel="preload" as="image" href="assets/3d/ending-celebration-atlas.png">
+  <link rel="preload" as="image" href="assets/3d/floor3/nature-exit.png">
+  <link rel="preload" as="image" href="assets/ui-inventory-3slot.png">
+  <link rel="preload" as="image" href="assets/3d/wall-bricks-neuron-a.png">
+  <link rel="preload" as="image" href="assets/3d/wall-bricks-neuron-b.png">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="styles.css?v=52">
+</head>
+<body>
+  <noscript>כדי לשחק בחדר הבריחה יש להפעיל JavaScript בדפדפן.</noscript>
+
+  <main id="app">
+    <section id="startScreen" class="screen cinematic-screen is-active" aria-labelledby="gameTitle">
+      <img class="cinematic-backdrop" src="assets/floor-dendrite-room.png" alt="">
+      <div class="cinematic-shade" aria-hidden="true"></div>
+      <div class="start-layout">
+        <header class="title-card ui-skin ui-dialog-skin">
+          <p class="eyebrow" lang="en">NEURAL ESCAPE LAB</p>
+          <h1 id="gameTitle" tabindex="-1">הבריחה מהמעבדה</h1>
+          <p>בסוף יום ארוך של ניסויים, גילית שהמעבדה נעולה. בשביל לצאת עליך לפתור את חידות הנוירונים בשלושת הקומות.</p>
+        </header>
+        <div class="start-actions" role="group" aria-label="אפשרויות משחק">
+          <button id="newGameBtn" class="art-button art-button--primary ui-skin ui-primary-skin" type="button">משחק חדש</button>
+          <button id="continueBtn" class="art-button ui-skin ui-secondary-skin" type="button" disabled>המשך משחק</button>
+          <button id="howToBtn" class="art-button ui-skin ui-secondary-skin" type="button">איך משחקים?</button>
+        </div>
+        <button id="testModeBtn" class="compact-button ui-skin ui-status-skin test-mode-entry" type="button">מצב בדיקה</button>
+        <p class="start-note ui-skin ui-status-skin">ההתקדמות נשמרת אוטומטית במכשיר הזה</p>
+      </div>
+    </section>
+
+    <section id="avatarScreen" class="screen cinematic-screen" aria-labelledby="avatarTitle" hidden>
+      <img class="cinematic-backdrop" src="assets/floor-dendrite-room.png" alt="">
+      <div class="cinematic-shade cinematic-shade--strong" aria-hidden="true"></div>
+      <div class="avatar-layout">
+        <header class="avatar-heading ui-skin ui-objective-skin">
+          <h2 id="avatarTitle" tabindex="-1">בחרו מדען או מדענית</h2>
+        </header>
+        <div id="avatarGrid" class="avatar-grid" role="list" aria-label="גלריית אווטארים"></div>
+        <aside class="avatar-confirmation ui-skin ui-dialog-skin" aria-live="polite">
+          <div class="avatar-preview ui-skin ui-portrait-skin" aria-hidden="true">
+            <span id="avatarPreviewArt" class="avatar-art"></span>
+          </div>
+          <div class="avatar-copy">
+            <span class="eyebrow">הבחירה שלכם</span>
+            <strong id="avatarPreviewName">ד״ר נועה לוין</strong>
+            <span id="avatarPreviewField">חוקרת חישוביות עצבית</span>
+          </div>
+          <div class="avatar-actions">
+            <button id="avatarBackBtn" class="art-button ui-skin ui-secondary-skin" type="button">חזרה</button>
+            <button id="avatarConfirmBtn" class="art-button art-button--primary ui-skin ui-primary-skin" type="button">כניסה למשחק</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen game-screen" aria-label="קומת החישוביות הדנדריטית" hidden>
+      <div class="game-shell">
+        <div id="playRegion" class="play-region" aria-label="אזור המשחק התלת־ממדי">
+          <canvas id="worldCanvas" tabindex="0" aria-label="המעבדה התלת־ממדית. נווטו באמצעות מקשי התנועה או בקרי המסך.">
+            הדפדפן אינו תומך בתצוגת תלת־ממד.
+          </canvas>
+          <span id="reticle" class="reticle" aria-hidden="true"></span>
+        </div>
+
+        <aside class="hud-rail" aria-label="מידע ותפריטים">
+          <header class="hud-summary ui-skin ui-status-skin">
+            <div class="hud-avatar ui-skin ui-portrait-skin" aria-hidden="true">
+              <span id="hudAvatarArt" class="avatar-art"></span>
+            </div>
+            <div class="hud-summary-copy">
+              <strong id="floorName">חישוביות דנדריטית</strong>
+            </div>
+            <div id="puzzleProgress" class="puzzle-progress" role="status" aria-live="polite" aria-label="0 מתוך 4 חידות הושלמו">0 / 4</div>
+          </header>
+
+          <section class="objective-card ui-skin ui-objective-skin" aria-labelledby="objectiveHeading">
+            <span id="objectiveHeading" class="eyebrow">המשימה הנוכחית</span>
+            <strong id="objectiveText">מצאו את קונסולת החידה בחדר</strong>
+          </section>
+
+          <section id="messageCard" class="message-card ui-skin ui-dialog-skin" role="status" aria-live="polite" aria-atomic="true">
+            <span id="messageArt" class="message-art" aria-hidden="true"></span>
+            <div>
+              <span id="messageKicker" class="eyebrow">המעבדה ממתינה</span>
+              <p id="messageText">הביטו סביב, התקרבו לחפצים ולחצו על פעולה.</p>
+            </div>
+          </section>
+
+          <section class="inventory-card ui-skin ui-inventory-four-skin" aria-labelledby="inventoryHeading">
+            <div class="inventory-heading">
+              <span id="inventoryHeading" class="eyebrow">הכיס שלי</span>
+              <small>חפצים שנאספו</small>
+            </div>
+            <div id="inventoryItems" class="inventory-items" role="list" aria-live="polite" aria-label="מקומות לחפצים"></div>
+          </section>
+
+          <div id="elevatorCodePanel" class="app-modal elevator-code-dialog" role="dialog" aria-modal="true" aria-labelledby="elevatorCodeTitle" hidden>
+            <section class="elevator-code-card ui-skin ui-dialog-skin">
+            <div class="rail-panel-heading">
+              <div>
+                <span class="eyebrow">יציאה מהקומה</span>
+                <h2 id="elevatorCodeTitle">סיסמת היציאה</h2>
+              </div>
+              <div class="test-code-actions">
+                <button id="testModePasswordBtn" class="compact-button ui-skin ui-status-skin" type="button" hidden>מצב בדיקה</button>
+                <button id="closeElevatorCodeBtn" class="compact-button ui-skin ui-secondary-skin" type="button" aria-label="סגירת הסיסמה">סגירה</button>
+              </div>
+            </div>
+            <p id="elevatorCodePrompt" class="elevator-code-prompt">הזינו את הסיסמה שקיבלתם מהמורה.</p>
+            <form id="elevatorCodeForm" class="puzzle-form" novalidate>
+              <label id="elevatorCodeLabel" for="elevatorCodeInput">סיסמה</label>
+              <div class="answer-row">
+                <input id="elevatorCodeInput" name="accessCode" type="text" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9٠-٩]{4}" aria-keyshortcuts="Enter Space" dir="ltr" required>
+                <button class="art-button art-button--primary ui-skin ui-primary-skin" type="submit">פתיחת המעבר</button>
+              </div>
+              <p id="elevatorCodeFeedback" class="puzzle-feedback" role="status" aria-live="polite"></p>
+            </form>
+            </section>
+          </div>
+
+          <section id="puzzlePanel" class="rail-panel puzzle-panel ui-skin ui-dialog-skin" aria-labelledby="puzzleTitle" hidden>
+            <div class="rail-panel-heading">
+              <div>
+                <span class="eyebrow">חידת החדר</span>
+                <h2 id="puzzleTitle">כיול ראשון</h2>
+              </div>
+              <button id="closePuzzleBtn" class="compact-button ui-skin ui-secondary-skin" type="button" aria-label="חזרה לחדר">חזרה לחדר</button>
+            </div>
+            <div id="riddlePuzzleView" hidden>
+              <div class="riddle-frame-shell">
+                <iframe id="riddleFrame" title="חידת התחנה" loading="eager" allow="autoplay"></iframe>
+              </div>
+            </div>
+            <div id="mathPuzzleView">
+              <p id="puzzleQuestion" class="puzzle-question" dir="ltr">2 + 3 = ?</p>
+              <form id="puzzleForm" class="puzzle-form" novalidate>
+                <label for="puzzleAnswer">התשובה שלכם</label>
+                <div class="answer-row">
+                  <input id="puzzleAnswer" name="answer" type="text" inputmode="numeric" autocomplete="off" aria-keyshortcuts="Enter Space" dir="ltr" required>
+                  <button class="art-button art-button--primary ui-skin ui-primary-skin" type="submit">בדיקה</button>
+                </div>
+                <p id="puzzleFeedback" class="puzzle-feedback" role="status" aria-live="polite"></p>
+              </form>
+            </div>
+          </section>
+
+          <section id="menuPanel" class="rail-panel menu-panel ui-skin ui-dialog-skin" aria-labelledby="menuHeading" hidden>
+            <div class="rail-panel-heading">
+              <h2 id="menuHeading">תפריט</h2>
+              <button id="resumeBtn" class="compact-button ui-skin ui-secondary-skin" type="button">סגירה</button>
+            </div>
+            <div class="menu-actions">
+              <button id="musicToggle" class="setting-button ui-skin ui-status-skin" type="button" aria-pressed="true"><span>מוזיקה</span><strong>פועלת</strong></button>
+              <button id="effectsToggle" class="setting-button ui-skin ui-status-skin" type="button" aria-pressed="true"><span>אפקטים</span><strong>פועלים</strong></button>
+              <button id="testModeMenuBtn" class="setting-button ui-skin ui-status-skin" type="button" hidden><span>מצב בדיקה</span><strong>נקודות בדיקה</strong></button>
+              <button id="restartBtn" class="setting-button ui-skin ui-secondary-skin" type="button">התחלה מחדש</button>
+              <button id="homeBtn" class="setting-button ui-skin ui-secondary-skin" type="button">למסך הראשי</button>
+            </div>
+          </section>
+
+          <section id="completionPanel" class="rail-panel completion-panel ui-skin ui-dialog-skin" aria-labelledby="completionTitle" hidden>
+            <span class="eyebrow">הקומה הושלמה</span>
+            <h2 id="completionTitle">כל דלתות המעבדה פתוחות!</h2>
+            <p id="completionText">פתרתם את חידות הקומה והפעלתם את המערכת הדנדריטית.</p>
+            <div class="completion-actions">
+              <button id="completionRestartBtn" class="art-button art-button--primary ui-skin ui-primary-skin" type="button">לשחק שוב</button>
+              <button id="completionHomeBtn" class="art-button ui-skin ui-secondary-skin" type="button">למסך הראשי</button>
+            </div>
+          </section>
+
+          <div class="hud-toolbar">
+            <button id="menuBtn" class="art-button ui-skin ui-secondary-skin" type="button" aria-expanded="false" aria-controls="menuPanel">תפריט</button>
+          </div>
+        </aside>
+
+        <footer id="controlsZone" class="controls-zone" aria-label="בקרי תנועה ופעולה">
+          <div class="control-help"><strong>תנועה בעולם</strong><span>WASD והחיצים לתנועה · Shift+חיצים לסיבוב</span></div>
+          <div class="movement-controls" role="group" aria-label="תנועה">
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="turn-right" aria-label="להסתובב ימינה" aria-keyshortcuts="Shift+ArrowRight">↻<span>סיבוב</span></button>
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="forward" aria-label="ללכת קדימה" aria-keyshortcuts="W ArrowUp">↑<span>קדימה</span></button>
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="turn-left" aria-label="להסתובב שמאלה" aria-keyshortcuts="Shift+ArrowLeft">↺<span>סיבוב</span></button>
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="right" aria-label="לפסוע ימינה" aria-keyshortcuts="D">→<span>ימינה</span></button>
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="backward" aria-label="ללכת אחורה" aria-keyshortcuts="S ArrowDown">↓<span>אחורה</span></button>
+            <button class="control-button ui-skin ui-secondary-skin" type="button" data-control="left" aria-label="לפסוע שמאלה" aria-keyshortcuts="A">←<span>שמאלה</span></button>
+          </div>
+          <button id="interactBtn" class="interact-button ui-skin ui-primary-skin" type="button" aria-keyshortcuts="E Enter"><span>פעולה</span><small>התקרבו לחפץ או לדלת</small></button>
+        </footer>
+      </div>
+      <p id="navigationStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+
+    <section id="endingScreen" class="screen cinematic-screen" aria-labelledby="endingTitle" hidden>
+      <img id="endingBackdrop" class="cinematic-backdrop" src="assets/floor-dendrite-room.png" alt="">
+      <div class="cinematic-shade cinematic-shade--strong" aria-hidden="true"></div>
+      <span id="endingAvatar" class="ending-avatar" aria-hidden="true"></span>
+      <article id="endingCard" class="ending-card ui-skin ui-dialog-skin">
+        <p class="eyebrow">היציאה הושלמה</p>
+        <h2 id="endingTitle" tabindex="-1">הצלחת לפתור את כל חידות הנוירונים ולצאת מהמעבדה!</h2>
+        <p id="endingText" hidden></p>
+        <div class="ending-actions">
+          <button id="playAgainBtn" class="art-button art-button--primary ui-skin ui-primary-skin" type="button">לשחק שוב</button>
+          <button id="endingHomeBtn" class="art-button ui-skin ui-secondary-skin" type="button">למסך הראשי</button>
+          <button id="endingTestModeBtn" class="art-button ui-skin ui-status-skin" type="button" hidden>מצב בדיקה</button>
+        </div>
+      </article>
+    </section>
+
+    <div id="testModeDialog" class="app-modal test-mode-dialog" role="dialog" aria-modal="true" aria-labelledby="testModeTitle" hidden>
+      <article class="modal-card test-mode-card ui-skin ui-dialog-skin">
+        <button id="testModeCloseBtn" class="compact-button modal-close ui-skin ui-secondary-skin" type="button" aria-label="סגירת מצב הבדיקה">סגירה</button>
+        <div id="testModeLockedView">
+          <p class="eyebrow">מצב בדיקה</p>
+          <h2 id="testModeTitle">פתיחת כלי הבדיקה</h2>
+          <p class="test-mode-copy">הזינו את קוד הבדיקה כדי לקפוץ לחדרים ולנקודות שונות במשחק. השינויים במצב זה לא יחליפו את ההתקדמות הרגילה.</p>
+          <form id="testModeForm" class="puzzle-form" novalidate>
+            <label for="testModeCodeInput">קוד בדיקה</label>
+            <div class="answer-row">
+              <input id="testModeCodeInput" name="testCode" type="text" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9٠-٩]{4}" dir="ltr" required>
+              <button class="art-button art-button--primary ui-skin ui-primary-skin" type="submit">פתיחה</button>
+            </div>
+            <p id="testModeFeedback" class="puzzle-feedback" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <div id="testModeUnlockedView" hidden>
+          <p class="eyebrow">מצב בדיקה פעיל</p>
+          <h2>בחירת נקודת בדיקה</h2>
+          <p class="test-mode-copy">בחרו נקודה כדי להתחיל משם. ההתקדמות במצב הבדיקה זמנית ואינה נשמרת.</p>
+          <div id="testCheckpointGrid" class="test-checkpoint-grid" role="list"></div>
+          <button id="testModeExitBtn" class="art-button ui-skin ui-secondary-skin test-mode-exit" type="button">יציאה ושחזור המשחק</button>
+        </div>
+      </article>
+    </div>
+
+    <div id="infoModal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+      <article class="modal-card ui-skin ui-dialog-skin">
+        <button class="compact-button modal-close ui-skin ui-secondary-skin" type="button" data-close-modal aria-label="סגירה">סגירה</button>
+        <p class="eyebrow">תדריך קצר</p>
+        <h2 id="infoTitle">איך משחקים?</h2>
+        <ol>
+          <li>נווטו קדימה, אחורה ולצדדים והסתובבו בתוך כל חדר.</li>
+          <li>חפשו את קונסולת החידה; כוונו אליה והתקרבו.</li>
+          <li>פתרו את תחנת החידה ואספו את הפריט הקסום שהופיע.</li>
+          <li>פתחו את דלת החדר הבא באמצעות הפריט הקסום. לאחר שהמדען נכנס למעלית, הזינו את סיסמת המורה כדי לעבור לקומה הבאה.</li>
+        </ol>
+        <p>במקלדת: W/S קדימה ואחורה, A/D וחץ ימינה/שמאלה לפסיעה, Shift+חיצים לסיבוב, E או Enter לפעולה.</p>
+        <button class="art-button art-button--primary ui-skin ui-primary-skin" type="button" data-close-modal>הבנתי, קדימה</button>
+      </article>
+    </div>
+  </main>
+
+  <script type="module" src="game.js?v=55"></script>
+</body>
+</html>

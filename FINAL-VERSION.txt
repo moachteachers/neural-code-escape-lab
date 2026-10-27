@@ -1,0 +1,4 @@
+Neural Code Escape Lab — final release
+Sites version: 72
+Source commit: 87b6286c1d76b5dbefc03764912fb5ddde9a9648
+Snapshot date: 2026-10-27

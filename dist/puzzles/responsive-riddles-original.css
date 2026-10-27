@@ -1,0 +1,666 @@
+/* Shared responsive layer for every embedded riddle. Loaded after each riddle's
+   original styles so the activities keep their visual identity without being
+   scaled down to fit a short iframe. */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+body {
+  zoom: 1 !important;
+}
+
+body[data-riddle] {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  zoom: 1 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body[data-riddle] img,
+body[data-riddle] svg,
+body[data-riddle] canvas {
+  max-width: 100%;
+}
+
+body[data-riddle] button,
+body[data-riddle] input,
+body[data-riddle] textarea,
+body[data-riddle] select {
+  max-width: 100%;
+}
+
+/* Floor 1 � dendritic workflow */
+body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+  height: 100dvh;
+  padding: 14px;
+  align-items: stretch;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+  width: min(1540px, 100%);
+  height: calc(100dvh - 28px);
+  max-height: none;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 78px;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) > .step-actions {
+  position: sticky !important;
+  z-index: 14;
+  bottom: 0 !important;
+  padding: 10px 8px 6px;
+  border-top: 1px solid rgba(203, 213, 225, .72);
+  background: linear-gradient(180deg, rgba(248, 251, 255, .12), #f8fbff 28%);
+}
+
+body[data-riddle^="dendritic-riddle"] .step-node {
+  min-height: 42px;
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .box-title,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .main {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .sub,
+body[data-riddle^="dendritic-riddle"] .workflow-step .builder .prepared-hint,
+body[data-riddle^="dendritic-riddle"] .placed-row,
+body[data-riddle^="dendritic-riddle"] .placed-details summary,
+body[data-riddle^="dendritic-riddle"] .placed-list > b {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle^="dendritic-riddle"] .board-wrap {
+  height: clamp(330px, 48dvh, 540px) !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 900px) {
+  body[data-riddle^="dendritic-riddle"] .workflow-backdrop {
+    padding: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-dialog {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .puzzle-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .visual-frame img {
+    width: 100%;
+    height: auto !important;
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-riddle^="dendritic-riddle"] #flowStep1 .builder,
+  body[data-riddle^="dendritic-riddle"] #flowStep2 .builder {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .workflow-step:not([hidden]) {
+    padding-inline: 13px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .step-node {
+    padding-inline: 4px !important;
+    font-size: 11.5px !important;
+  }
+
+  body[data-riddle^="dendritic-riddle"] .board-wrap {
+    height: clamp(310px, 58dvh, 440px) !important;
+  }
+}
+
+/* Floor 2 � temperature */
+body[data-riddle="skin-temperature"] .shell {
+  max-width: 1500px;
+}
+
+body[data-riddle="skin-temperature"] .gauge-stage {
+  min-height: 420px;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="skin-temperature"] .plot-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .result-orbit .condition-head small,
+body[data-riddle="skin-temperature"] .fan-tool span,
+body[data-riddle="skin-temperature"] .footer-note,
+body[data-riddle="skin-temperature"] .reset-note {
+  font-size: 12px !important;
+}
+
+@media (max-width: 1180px) {
+  body[data-riddle="skin-temperature"] .lab-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="skin-temperature"] .lab-side {
+    order: -1;
+  }
+}
+
+@media (max-width: 1050px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr);
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 18px;
+    overflow: visible;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 700 / 390;
+    min-width: 0;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > .temperature-gauge,
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual > #resultTemperatureGauge {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2;
+    grid-row: 1;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit .condition,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-content: center;
+    gap: 9px;
+    width: 100%;
+    height: auto !important;
+    pointer-events: auto;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit .condition {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 68px;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-riddle="skin-temperature"] .gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] .result-gauge-stage.responsive-gauge-stage,
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 12px;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual,
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-column: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .responsive-gauge-visual {
+    grid-row: 1;
+  }
+
+  body[data-riddle="skin-temperature"] .gauge-stage .plot-orbit,
+  body[data-riddle="skin-temperature"] .result-gauge-stage .result-orbit {
+    grid-row: 2;
+  }
+
+  body[data-riddle="skin-temperature"] #decode .result-gauge-stage.responsive-gauge-stage > .result-orbit {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  body[data-riddle="skin-temperature"] .cool-control .cool-note {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}
+
+/* Floor 2 � movement direction */
+body[data-riddle="movement-direction"] .shell {
+  max-width: 1500px;
+}
+
+body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+  align-items: center;
+  gap: 22px;
+  width: 100% !important;
+  max-width: none !important;
+  aspect-ratio: auto !important;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-visual {
+  position: relative;
+  width: min(100%, 700px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+  position: static !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 10px;
+  width: 100%;
+  pointer-events: auto !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-raster {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 72px;
+  padding: 9px 10px;
+  transform: none !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title {
+  font-size: 13px !important;
+  line-height: 1.25;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-title small,
+body[data-riddle="movement-direction"] .board-label,
+body[data-riddle="movement-direction"] .source,
+body[data-riddle="movement-direction"] .subtle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row {
+  height: 13px;
+}
+
+body[data-riddle="movement-direction"] .responsive-direction-stage .mini-row i {
+  height: 10px;
+}
+
+body[data-riddle="movement-direction"] .target-index {
+  font-size: 11px !important;
+}
+
+body[data-riddle="movement-direction"] .target-angle {
+  font-size: 12px !important;
+}
+
+body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+  width: 100%;
+  max-width: none !important;
+}
+
+@media (max-width: 1250px) {
+  body[data-riddle="movement-direction"] .experiment-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .experiment-instructions {
+    order: -1;
+  }
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="movement-direction"] .decode-layout,
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-top {
+    grid-template-areas: "evidence" "answer" !important;
+  }
+
+  body[data-riddle="movement-direction"] .decode-layout > .atlas-card {
+    width: 100%;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 920px) {
+  body[data-riddle="movement-direction"] .board-stage.responsive-direction-stage,
+  body[data-riddle="movement-direction"] .result-stage.responsive-direction-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="movement-direction"] .responsive-direction-stage > .plot-ring {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="movement-direction"] .responsive-direction-visual {
+    width: 100%;
+  }
+}
+
+/* Floor 2 � hippocampal object neuron */
+body[data-riddle="hippocampal-object-neuron"] .shell {
+  max-width: 1480px;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .intro-grid {
+  min-height: 0 !important;
+}
+
+body[data-riddle="hippocampal-object-neuron"] .photo-card img {
+  height: clamp(300px, 45dvh, 520px) !important;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1050px) {
+  body[data-riddle="hippocampal-object-neuron"] .intro-grid,
+  body[data-riddle="hippocampal-object-neuron"] .lab-scene,
+  body[data-riddle="hippocampal-object-neuron"] .decode-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-riddle="hippocampal-object-neuron"] .instructions ul,
+  body[data-riddle="hippocampal-object-neuron"] .category-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Floor 2 � language neuron */
+body[data-riddle="language-neuron"] .app-shell {
+  max-width: 1480px;
+}
+
+body[data-riddle="language-neuron"] .hero-grid,
+body[data-riddle="language-neuron"] #screen-intro .hero-grid {
+  min-height: 0 !important;
+  transform: none !important;
+}
+
+body[data-riddle="language-neuron"] .illustration-tag,
+body[data-riddle="language-neuron"] .truth-chip,
+body[data-riddle="language-neuron"] .review-status,
+body[data-riddle="language-neuron"] .choice-button small,
+body[data-riddle="language-neuron"] .keyboard-hint,
+body[data-riddle="language-neuron"] .dataset-kicker,
+body[data-riddle="language-neuron"] .dataset-breakdown span,
+body[data-riddle="language-neuron"] .pipeline-label,
+body[data-riddle="language-neuron"] .pipeline-set > span:last-child,
+body[data-riddle="language-neuron"] .individual-test-card span,
+body[data-riddle="language-neuron"] .individual-test-card strong {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-riddle="language-neuron"] .sort-bin,
+body[data-riddle="language-neuron"] .current-trial {
+  min-height: clamp(250px, 38dvh, 390px) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordions {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+body[data-riddle="language-neuron"] .learning-accordion[open] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-areas:
+      "current current"
+      "nonword word" !important;
+  }
+
+  body[data-riddle="language-neuron"] .training-stage,
+  body[data-riddle="language-neuron"] .fake-test-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="language-neuron"] .learning-accordions,
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="language-neuron"] .sorter {
+    grid-template-areas: "current" "word" "nonword" !important;
+  }
+}
+
+/* Floor 3 � place cells */
+body[data-riddle="mouse-place-cells"] .app {
+  width: min(1440px, 100%);
+}
+
+body[data-riddle="mouse-place-cells"].intro-screen #scene {
+  width: min(100%, 1120px) !important;
+  aspect-ratio: 1120 / 660;
+}
+
+body[data-riddle="mouse-place-cells"] button {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+body[data-riddle="mouse-place-cells"] .card-note,
+body[data-riddle="mouse-place-cells"] .neuron-sub,
+body[data-riddle="mouse-place-cells"] .rate-pill,
+body[data-riddle="mouse-place-cells"] .trace-legend,
+body[data-riddle="mouse-place-cells"] .network-neuron strong,
+body[data-riddle="mouse-place-cells"] .network-neuron small,
+body[data-riddle="mouse-place-cells"] .map-tile,
+body[data-riddle="mouse-place-cells"] .map-clear,
+body[data-riddle="mouse-place-cells"] .answered-count,
+body[data-riddle="mouse-place-cells"] .quiz-hint,
+body[data-riddle="mouse-place-cells"] .route-line,
+body[data-riddle="mouse-place-cells"] .answer-table,
+body[data-riddle="mouse-place-cells"] .answer-table code {
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+body[data-riddle="mouse-place-cells"] .network-neuron {
+  min-height: 108px;
+}
+
+body[data-riddle="mouse-place-cells"] .map-trigger {
+  min-height: 42px;
+}
+
+body[data-riddle="mouse-place-cells"] #stepBadge {
+  font-size: 12px !important;
+}
+
+@media (max-width: 760px) {
+  body[data-riddle="mouse-place-cells"] .lesson-grid,
+  body[data-riddle="mouse-place-cells"] .network-layout,
+  body[data-riddle="mouse-place-cells"] .quiz-layout,
+  body[data-riddle="mouse-place-cells"] .reflection {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-riddle="mouse-place-cells"] .network-neurons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open {
+    grid-column: 1 / -1;
+  }
+
+  body[data-riddle="mouse-place-cells"] .network-neuron.map-open .map-picker {
+    position: static;
+    width: 100%;
+    margin-top: 5px;
+    transform: none;
+  }
+}
+
+/* Floor 3 � WormMind */
+body[data-riddle="wormmind"] .brand small,
+body[data-riddle="wormmind"] .step-chip,
+body[data-riddle="wormmind"] .step-chip b,
+body[data-riddle="wormmind"] .paper-link,
+body[data-riddle="wormmind"] .eyebrow,
+body[data-riddle="wormmind"] .arena-header small,
+body[data-riddle="wormmind"] .arena-header > p span,
+body[data-riddle="wormmind"] .circuit-card header small,
+body[data-riddle="wormmind"] .observation-log span,
+body[data-riddle="wormmind"] .instruction-card b,
+body[data-riddle="wormmind"] .network-legend span,
+body[data-riddle="wormmind"] .rewire-counter span,
+body[data-riddle="wormmind"] #editState,
+body[data-riddle="wormmind"] .simulation-badge,
+body[data-riddle="wormmind"] .artificial-key {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  body[data-riddle="wormmind"] .hero-grid,
+  body[data-riddle="wormmind"] .arena-grid,
+  body[data-riddle="wormmind"] .circuit-comparison,
+  body[data-riddle="wormmind"] .retest-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body[data-riddle="wormmind"] .topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 650px) {
+  body[data-riddle="wormmind"] .network-legend {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    overflow-x: visible;
+  }
+
+  body[data-riddle="wormmind"] .network-legend span {
+    min-width: 0;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage {
+    display: grid;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  body[data-riddle="wormmind"] .arena-stage canvas {
+    width: 100%;
+    height: 300px;
+  }
+
+  body[data-riddle="wormmind"] .classification-panel {
+    position: static;
+    min-height: 0;
+    margin: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-riddle] {
+    scroll-behavior: auto;
+  }
+}
+

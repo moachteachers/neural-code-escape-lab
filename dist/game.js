@@ -214,7 +214,7 @@ const FLOOR3_PUZZLES = [
   {
     id: "wormmind",
     title: "WormMind — מוח, חיווט והתנהגות",
-    riddleSrc: "puzzles/floor3/wormmind.html?v=52",
+    riddleSrc: "puzzles/floor3/wormmind.html?v=53",
     item: "cell"
   }
 ];
